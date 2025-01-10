@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% extends 'base.html' %}
+{% block content %}
+
+<body>
+    <section class="form-container">
+        <form>
+            <div class="rectangle-container">
+                <input type="text" class="form-control" name="nombre_completo" placeholder="NOMBRE COMPLETO*">
+            </div>
+            <div class="rectangle-container">
+                <input type="email" class="form-control" name="correo_electronico" placeholder="CORREO ELECTRONICO*">
+            </div>
+            <div class="rectangle-container">
+                <input type="tel" class="form-control" name="telefono" placeholder="TELEFONO">
+            </div>
+            <div class="rectangle-container">
+                <input type="text" class="form-control" name="nombre_empresa" placeholder="NOMBRE DE LA EMPRESA*">
+            </div>
+            <div class="rectangle-container">
+                <input type="text" class="form-control" name="cargo_rol" placeholder="CARGO O ROL">
+            </div>
+            <div class="rectangle-container">
+                <input type="text" class="form-control" name="motivo_consulta"
+                    placeholder="SELECCIONE MOTIVO DE LA CONSULTA">
+            </div>
+            <div class="rectangle-container d-flex align-items-center">
+                <input type="radio" id="terms" name="terms" class="form-check-input me-2">
+                <label for="terms" class="form-check-label tick">Acepto los términos y condiciones establecidos en el
+                    Aviso
+                    Legal y Política de Privacidad *</label>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg btn-submit">SOLICITAR DEMOSTRACION GRATUITA</button>
+            </div>
+        </form>
+    </section>
+</body>
+<style>
+    .form-check-input {
+        width: 30px;
+    }
+
+    body {
+        background-color: #f0f0f0;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        height: 80vh;
+        margin-top: 50px;
+    }
+
+    .form-container form {
+        width: 20%;
+
+    }
+
+    .rectangle-container {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        height: 50px;
+        font-size: 1.2rem;
+        border: 4px solid black;
+        border-radius: 0;
+        text-align: center;
+    }
+
+    .form-check-input {
+        height: 20px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        font-size: 1rem;
+        background-color: white;
+        color: blue;
+    }
+
+    .tick {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+</style>
+
+</html>
+{% endblock %}

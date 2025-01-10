@@ -1,0 +1,51 @@
+<div class="container-fluid d-flex">
+    <div class="sidebar custom-sidebar d-flex flex-column align-items-center">
+        <div class="bg-primary text-white p-3 w-100 text-center">
+            <h5>User XXX</h5>
+            <p>hola@unsitiogenial.es</p>
+        </div>
+        <div class="text-white p-3 mt-5">
+            <a href="\home\valoraciones" id="mis-valoraciones" class="sidebar-link">MIS VALORACIONES</a>
+            <a href="\home\ventas" id="mis-ventas" class="sidebar-link">MIS VENTAS</a>
+            <a href="\home\informes" id="mis-informes" class="sidebar-link">MIS INFORMES</a>
+            <a href="#" id="generar-informe" class="sidebar-link">GENERAR INFORME</a>
+        </div>
+    </div>
+    <div class="content flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        padding: 0;
+    }
+    .sidebar {
+        background-color: #ccd0ee;
+        height: 99vh;
+        padding: 0;
+    }
+
+    .custom-sidebar {
+        width: 250px;
+    }
+
+    .sidebar div {
+        margin: 0;
+    }
+
+    .sidebar a {
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+        display: block;
+        margin-bottom: 50px;
+        font-weight: bold;
+        font-size: 1.25rem;
+        padding-left: 15px;
+    }
+
+    .sidebar a:hover {
+        background-color: #a6b2c3;
+    }
+</style>
