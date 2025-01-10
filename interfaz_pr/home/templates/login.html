@@ -27,11 +27,11 @@
 
         <form method="POST">
             {% csrf_token %}
-            <div class="mb-3">
+            <div class="mb-4">
                 <label for="username" class="form-label text-white">Username/E-mail:</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
                 <label for="password" class="form-label text-white">Password:</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
@@ -42,60 +42,84 @@
         </form>
     </div>
 </body>
+
 <style>
     .login-container {
         position: absolute;
-        top: 52%;
-        right: 14%;
+        top: 50%;
+        right: 5%;
         transform: translateY(-50%);
         background-color: hsl(229, 94%, 31%);
         /* Fondo azul */
-        padding: 2rem;
-        border-radius: 80px;
+        padding: 3rem;
+        border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 30%;
-        height: 75%;
+        width: 50%; /* Más ancho */
+        max-width: 600px; /* Aumentado para mayor tamaño */
+        height: 80%;
     }
 
     .login-container input {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         background-color: #fff;
         color: #333;
-        padding: 1rem;
-        font-size: 1.1rem;
+        padding: 1.5rem; /* Aumento el padding para hacerlo más grande */
+        font-size: 1.5rem; /* Aumento el tamaño de la fuente */
     }
 
     .login-container .btn-login {
         background-color: #fff;
         color: #000000;
-        font-size: 2.2rem;
-        padding: 0.8rem 1.5rem;
-        width: auto;
+        font-size: 1.8rem; /* Aumento el tamaño de la fuente */
+        padding: 1rem 2rem; /* Aumento el padding para hacerlo más grande */
+        width: 100%;
         border: none;
         border-radius: 20px;
-        margin-left: auto;
-        display: block;
         font-weight: bold;
     }
 
-
     .login-container h3 {
         color: white;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         text-align: center;
+        font-size: 3rem; /* Aumento el tamaño del título */
     }
 
     .login-container label {
-        font-size: 1.8rem;
-    }
-
-    .login-container h3 {
-        font-size: 4rem;
+        font-size: 1.5rem; /* Aumento el tamaño de los labels */
     }
 
     .login-container a {
         color: white;
         text-decoration: none;
+        font-size: 1.2rem; /* Aumento el tamaño del texto del enlace */
+    }
+
+    @media (max-width: 768px) {
+        .login-container {
+            width: 75%; /* Más ancho en pantallas pequeñas */
+            right: 12%;
+        }
+
+        .login-container h3 {
+            font-size: 2.5rem; /* Aumento el tamaño del título en pantallas pequeñas */
+        }
+
+        .login-container input {
+            font-size: 1.3rem; /* Aumento el tamaño de la fuente en pantallas pequeñas */
+        }
+
+        .login-container label {
+            font-size: 1.3rem; /* Aumento el tamaño de los labels en pantallas pequeñas */
+        }
+
+        .login-container .btn-login {
+            font-size: 1.5rem; /* Aumento el tamaño del botón en pantallas pequeñas */
+        }
+
+        .login-container a {
+            font-size: 1.3rem; /* Aumento el tamaño del texto del enlace en pantallas pequeñas */
+        }
     }
 </style>
 
