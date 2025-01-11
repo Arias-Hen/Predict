@@ -19,18 +19,18 @@
 </head>
 
 <body>
-    <div class="container-fluid mt-5">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-10 content">
+            <div class="col-12 col-md-10 content">
                 <div class="row mt-5">
-                    <div class="col-md-6">
+                    <!-- Primera columna -->
+                    <div class="col-12 col-md-6">
                         <h4 class="text-center">VALORACIÓN</h4>
                         <form id="valuation-form">
                             {% csrf_token %}
                             <div class="form-container">
                                 <div class="row g-3">
-                                    <!-- Primera columna -->
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-4">
                                         <label for="ciudad" class="form-label">Ciudad:</label>
                                         <select id="ciudad" class="form-select" onchange="cargarDistritos()"></select>
                                         <label for="distrito" class="form-label mt-3">Distrito:</label>
@@ -50,8 +50,8 @@
                                             <option value="Centro">Centro</option>
                                         </select>
                                     </div>
-                                    <!-- Segunda columna -->
-                                    <div class="col-md-4">
+
+                                    <div class="col-12 col-md-4">
                                         <label for="num-banos" class="form-label">Número de baños:</label>
                                         <input id="num-banos" class="form-control" type="number" min="1" step="1"
                                             placeholder="">
@@ -80,8 +80,8 @@
                                             <option value="11">8</option>
                                         </select>
                                     </div>
-                                    <!-- Tercera columna -->
-                                    <div class="col-md-4">
+
+                                    <div class="col-12 col-md-4">
                                         <label for="tiene-ascensor" class="form-label">Tiene ascensor:</label>
                                         <select id="tiene-ascensor" class="form-select">
                                             <option value="0">No</option>
@@ -109,11 +109,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <!-- Buttons y tabla -->
                                 <div class="row mt-3">
-                                    <div class="col-md-8">
+                                    <div class="col-12 col-md-8">
                                         <div class="text-center">
                                             <button type="button" class="btn btn-primary" id="valorar">VALORAR</button>
-                                            <table class="table tb mt-3">
+                                            <table class="table mt-3">
                                                 <thead>
                                                     <tr>
                                                         <th>Precio mínimo</th>
@@ -129,13 +130,19 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            <div class="col-md-12 text-center">
+                                                <button type="button" class="btn btn-primary mb-3" id="tranformar"
+                                                    onclick="transformarAProyecto()">TRANSFORMAR A
+                                                    PROSPECTO DE VENTA
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-4">
                                         <div class="text-center">
                                             <button type="button" class="btn btn-primary mb-3"
                                                 id="correccion-manual">CORRECCIÓN MANUAL</button>
-                                            <table class="table tb1">
+                                            <table class="table">
                                                 <thead>
                                                     <tr>
                                                         <th>Precio esperado</th>
@@ -147,20 +154,12 @@
                                                         </td>
                                                     </tr>
                                                 </tbody>
+                                                
                                             </table>
+                                            <div class="col-md-12 text-center">
+                                                <button type="button" class="btn btn-primary" id="vvalorar">VOLVER A VALORAR</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col-md-6 text-center">
-                                        <button type="button" class="btn btn-primary" id="tranformar"
-                                            onclick="transformarAProyecto()">TRANSFORMAR A
-                                            PROSPECTO DE VENTA
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6 text-center">
-                                        <button type="button" class="btn btn-primary" id="vvalorar">VOLVER A
-                                            VALORAR</button>
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +167,7 @@
 
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <h4 class="text-center">VISUALIZACIÓN</h4>
                         <div class="row">
                             <div class="col-6">
@@ -383,7 +382,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value 
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
                 body: JSON.stringify(data),
             })
@@ -526,18 +525,21 @@
     </script>
 </body>
 <style>
+    .container-fluid {
+        padding: 0;
+    }
+
     .welcome-banner {
-        width: calc(100% - 250px);
+        width: 100%;
         height: 105px;
         background-color: white;
         text-align: left;
-        position: fixed;
-        top: 0;
-        left: 250px;
-        z-index: 10;
+        position: relative;
         margin: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1;
     }
+
 
     .welcome-title {
         margin: 0;
@@ -545,58 +547,18 @@
         font-weight: bold;
         color: blue;
         line-height: 100px;
-
     }
 
-    .row.mb-3 .col {
-        margin-bottom: 10px;
+    @media (max-width: 768px) {
+        .welcome-title {
+            font-size: 1.5rem;
+        }
     }
-
-    .form-label {
-        white-space: nowrap;
-        font-size: 14px;
-    }
-
-    .form-select {
-        width: 100%;
-    }
-
-    h1,
-    h4.text-center,
-    h4.text {
-        color: blue;
-        text-decoration: underline;
-        font-weight: bold;
-    }
-
-    body {
-        background-color: #dcdcdc;
-    }
-
-    .tb {
-        background: #ffffff;
-    }
-
-    .tb1 {
-        margin-left: 20px;
-        background: #ffffff;
-        width: 200px;
-    }
-
-    .vl {
-        margin-left: 180px;
-    }
-
-    .content {
-        padding: 10px;
-        max-width: calc(100% - 250px);
-    }
-
 
     .form-container {
         margin: 0 auto;
         padding: 20px 40px;
-        max-width: 900px;
+        max-width: 100%;
         background: #dcdcdc;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
@@ -607,6 +569,23 @@
         font-weight: bold;
         background-color: #ffffff;
         border: none;
+    }
+
+    body {
+        background-color: #dcdcdc;
+
+    }
+
+    h1,
+    h4.text-center,
+    h4.text {
+        color: blue;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    .table {
+        background: #ffffff;
     }
 </style>
 

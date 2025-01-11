@@ -11,41 +11,49 @@
 {% block content %}
 
 <body>
-    <div class="login-container">
-        <h3>CREATE YOUR ACCOUNT</h3>
-        {% if messages %}
-        <div class="alert-container">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-white" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="container-fluid d-flex justify-content-end align-items-center mt-5">
+        <div class="card p-4 shadow-lg me-5 mt-n5" style="max-width: 500px; width: 100%; background-color: hsl(229, 94%, 31%); border-radius: 20px;">
+            <h3 class="text-white text-center mb-4">CREATE YOUR ACCOUNT</h3>
+            {% if messages %}
+            <div class="alert-container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-white" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label text-white">Username:</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label text-white">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label text-white">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label text-white">Confirm Password:</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+                <p>
+                    <a href='/home/login/' class="text-decoration-none text-white">
+                        ¿Tienes una cuenta? <br> Iniciar Sesion
+                    </a>
+                </p>
+                <button type="submit" class="btn btn-light w-100 fw-bold">REGISTER</button>
+            </form>
         </div>
-        {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label text-white">Username:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label text-white">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label text-white">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <div class="mb-3">
-                <label for="confirm_password" class="form-label text-white">Confirm Password:</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-            </div>
-            <p><a href='/home/login/' class="text-decoration-none text-white">¿Tienes una cuenta? <br> Iniciar Sesion</a></p>
-            <button type="submit" class="btn btn-login">REGISTER</button>
-        </form>
     </div>
 </body>
+
 
 <style>
     .login-container {
