@@ -13,6 +13,9 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForms, RegistrationForm
 from django.contrib import messages
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+
 
 def home(request):
     return render(request, 'home.html')
@@ -26,8 +29,7 @@ def cfunciona(request):
 def casos(request):
     return render(request, 'casos.html')
 
-def contacto(request):
-    return render(request, 'contacto.html')
+
 
 def valoraciones(request):
     options = []
@@ -318,3 +320,41 @@ def exportar_excel(request):
             return HttpResponse(f"Error interno: {e}", status=500)
     else:
         return HttpResponse("Método no permitido", status=405)
+
+
+def contacto(request):
+    if request.method == 'POST':
+        nombre_completo = request.POST.get('nombre_completo')
+        correo_electronico = request.POST.get('correo_electronico')
+        telefono = request.POST.get('telefono')
+        nombre_empresa = request.POST.get('nombre_empresa')
+        cargo_rol = request.POST.get('cargo_rol')
+        motivo_consulta = request.POST.get('motivo_consulta')
+        terms = request.POST.get('terms')
+
+        if terms != 'on':
+            return JsonResponse({"message": "Debe aceptar los términos y condiciones"}, status=400)
+
+        asunto = "Solicitud de demostración gratuita"
+        mensaje = f"""
+        Nombre Completo: {nombre_completo}
+        Correo Electrónico: {correo_electronico}
+        Teléfono: {telefono}
+        Nombre de la Empresa: {nombre_empresa}
+        Cargo/Rol: {cargo_rol}
+        Motivo de la Consulta: {motivo_consulta}
+        """
+        try:
+            send_mail(
+                asunto,
+                mensaje,
+                correo_electronico, 
+                ['jhonhendrick.ja@gmail.com'], 
+                fail_silently=False,
+            )
+            return JsonResponse({"message": "Formulario enviado correctamente. ¡Gracias por tu interés!"})
+        except Exception as e:
+            return JsonResponse({"message": f"Hubo un error al enviar el correo: {e}"}, status=500)
+
+    return render(request, 'contacto.html')
+

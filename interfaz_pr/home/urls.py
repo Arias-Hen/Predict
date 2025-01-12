@@ -19,4 +19,5 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('register/', views.user_register, name='register'),
     path('exportar_excel/', views.exportar_excel, name='exportar_excel'),
+
 ]
