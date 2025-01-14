@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Task
+from .models import Users
 import csv
 import json
 import os
@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 
 
 def home(request):
@@ -288,10 +289,17 @@ def user_register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            new_user = form.save(commit=False)
-            new_user.set_password(form.cleaned_data['password'])
+            # Crear el nuevo usuario con todos los campos necesarios
+            new_user = Users(
+                usuario=form.cleaned_data['username'],
+                empresa='Mi Empresa', 
+                nombre=form.cleaned_data['username'],
+                password=make_password(form.cleaned_data['password']),
+                estado=True 
+            )
             new_user.save()
-            messages.error(request, 'Registration successful! You can now log in.')
+
+            messages.success(request, 'Registration successful! You can now log in.')
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})

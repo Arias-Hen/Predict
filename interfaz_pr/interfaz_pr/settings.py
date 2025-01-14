@@ -82,8 +82,15 @@ WSGI_APPLICATION = 'interfaz_pr.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'predictbuildadmin',
+        'PASSWORD': 'ayrt0nsenn@',
+        'HOST': 'predictbuild.postgres.database.azure.com',  
+        'PORT': '5432',       
+        'OPTIONS': {
+            'options': '-c search_path=data,public'
+        },
     }
 }
 
@@ -135,3 +142,18 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'jhonhendrick.ins@gmail.com' 
 EMAIL_HOST_PASSWORD = 'gqhs vzrk iind qnih'  
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    },
+}

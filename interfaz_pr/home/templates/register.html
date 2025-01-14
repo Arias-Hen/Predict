@@ -37,11 +37,12 @@
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label text-white">Password:</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
+                    <div></div>
+                    {{ form.password }}                
                 <div class="mb-3">
                     <label for="confirm_password" class="form-label text-white">Confirm Password:</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    <div></div>
+                    {{ form.confirm_password }}
                 </div>
                 <p>
                     <a href='/home/login/' class="text-decoration-none text-white">
