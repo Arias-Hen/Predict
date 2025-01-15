@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class Task(models.Model):
     title = models.CharField(max_length=100)
@@ -12,44 +12,50 @@ class Task(models.Model):
     def _str_(self):
         return self.title
 
-class Users(models.Model):
+class UsersManager(BaseUserManager):
+    def create_user(self, usuario, password=None, **extra_fields):
+        if not usuario:
+            raise ValueError("El nombre de usuario debe ser proporcionado")
+        user = self.model(usuario=usuario, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, usuario, password=None, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+        return self.create_user(usuario, password, **extra_fields)
+
+
+class Users(AbstractBaseUser, PermissionsMixin):
     uniqueid = models.AutoField(primary_key=True)
-    usuario = models.CharField(max_length=100)
+    usuario = models.CharField(max_length=100, unique=True)
     empresa = models.CharField(max_length=100, default='Mi Empresa')
     nombre = models.CharField(max_length=100)
-    password = models.CharField(max_length=128)
-    estado = models.BooleanField(default=True) 
+    estado = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_set',  # Nombre único para evitar conflictos
+        blank=True,
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_permissions',  # Nombre único para evitar conflictos
+        blank=True,
+    )
+
+    objects = UsersManager()
+
+    USERNAME_FIELD = 'usuario'
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = 'data"."users'
 
     def __str__(self):
         return self.usuario
-
-    # Establecer una contraseña cifrada
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-        self.save()
-
-    # Verificar la contraseña
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
-
-    # Marcar el usuario como autenticado
-    @property
-    def is_authenticated(self):
-        return True if self.is_active else False
-    uniqueid = models.AutoField(primary_key=True)
-    usuario = models.CharField(max_length=100)
-    empresa = models.CharField(max_length=100, default='Mi Empresa')
-    nombre = models.CharField(max_length=100)
-    password = models.CharField(max_length=128)
-    estado = models.BooleanField(default=True) 
-    date_joined = models.DateTimeField(auto_now_add=True)
-    last_login = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-    class Meta:
-        db_table = 'data"."users'

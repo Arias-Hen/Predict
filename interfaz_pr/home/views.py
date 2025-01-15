@@ -19,6 +19,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from functools import wraps
+from django.contrib.auth import get_user_model
 
 
 def home(request):
@@ -38,6 +40,9 @@ def valoraciones(request):
     options = []
     user = request.user
     user_id = user.uniqueid
+    user_nombre = user.nombre
+    print(f"EL ID DEL USUARIO: {user_id}")
+    print(f"EL ID DEL USUARIO: {user}") 
     try:
         with open('distritos.csv', newline='', encoding='ISO-8859-1') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -57,7 +62,7 @@ def valoraciones(request):
         print(f"Error al leer el archivo CSV: {e}")
         options_json = '[]'
 
-    return render(request, 'valoraciones.html', {'options_json': options_json, 'user_id': user_id})
+    return render(request, 'valoraciones.html', {'options_json': options_json, 'user_id': user_id, 'user_nombre': user_nombre})
 
 @csrf_exempt
 def ventas(request):
@@ -274,22 +279,18 @@ def user_login(request):
         form = LoginForms(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            try:
-                user = Users.objects.get(usuario=cd['username'])
-                if check_password(cd['password'], user.password):
+            user = authenticate(request, username=cd['username'], password=cd['password'])
+            if user is not None:
+                if user.is_active:
                     login(request, user)
-                    print(f"User is authenticated: {request.user.is_authenticated}")
-                    
-                    # Redirigir
                     next_url = request.GET.get('next', '/home/valoraciones/')
                     return redirect(next_url)
                 else:
-                    messages.error(request, 'Credenciales inválidas. La contraseña es incorrecta.')
-            except Users.DoesNotExist:
-                messages.error(request, 'Credenciales inválidas. El usuario no existe.')
+                    messages.error(request, 'Cuenta desactivada. Contacta al administrador.')
+            else:
+                messages.error(request, 'Credenciales inválidas.')
     else:
         form = LoginForms()
-
     return render(request, 'login.html', {'form': form})
 
 
@@ -317,6 +318,7 @@ def user_register(request):
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
+
 
 @csrf_exempt
 def exportar_excel(request):
@@ -378,10 +380,3 @@ def contacto(request):
             return JsonResponse({"message": f"Hubo un error al enviar el correo: {e}"}, status=500)
 
     return render(request, 'contacto.html')
-
-@login_required
-def sidebar(request):
-    user = request.user
-    user_id = user.uniqueid  # Asegúrate de que `uniqueid` es el campo correcto
-    print(f"User ID: {user_id}")
-    return render(request, 'sidebar.html', {'user_id': user_id})

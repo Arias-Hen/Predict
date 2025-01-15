@@ -160,3 +160,7 @@ LOGGING = {
 LOGIN_URL = '   home/login/'
 LOGIN_REDIRECT_URL = 'home:valoraciones'
 
+AUTHENTICATION_BACKENDS = [
+    'home.backends.CustomUserBackend',  # Tu backend personalizado
+    'django.contrib.auth.backends.ModelBackend',  # Backend predeterminado de Django
+]
