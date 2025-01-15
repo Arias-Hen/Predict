@@ -81,6 +81,17 @@ WSGI_APPLICATION = 'interfaz_pr.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'predictbuildadmin',
+        'PASSWORD': 'ayrt0nsenn@',
+        'HOST': 'predictbuild.postgres.database.azure.com',  
+        'PORT': '5432',       
+        'OPTIONS': {
+            'options': '-c search_path=data,public'
+        },
+    }
 }
 
 
@@ -146,3 +157,6 @@ LOGGING = {
         },
     },
 }
+LOGIN_URL = '   home/login/'
+LOGIN_REDIRECT_URL = 'home:valoraciones'
+

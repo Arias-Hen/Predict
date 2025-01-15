@@ -451,6 +451,7 @@
             const textoValidado = textoPegado.replace(/[^0-9.,]/g, '');
             document.execCommand('insertText', false, textoValidado);
         });
+        
         document.getElementById('valorar').addEventListener('click', function () {
             const modo = "valoracion";
             const ciudad = document.getElementById('ciudad').value;

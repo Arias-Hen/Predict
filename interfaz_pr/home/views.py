@@ -16,6 +16,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -30,10 +33,11 @@ def cfunciona(request):
 def casos(request):
     return render(request, 'casos.html')
 
-
-
+@login_required
 def valoraciones(request):
     options = []
+    user = request.user
+    user_id = user.uniqueid
     try:
         with open('distritos.csv', newline='', encoding='ISO-8859-1') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -53,7 +57,7 @@ def valoraciones(request):
         print(f"Error al leer el archivo CSV: {e}")
         options_json = '[]'
 
-    return render(request, 'valoraciones.html', {'options_json': options_json})
+    return render(request, 'valoraciones.html', {'options_json': options_json, 'user_id': user_id})
 
 @csrf_exempt
 def ventas(request):
@@ -182,7 +186,6 @@ def informes(request):
         print("Archivo de valoraciones no encontrado.")
     return render(request, 'informes.html', {'options_json': options_json, 'context_json': context_json, 'valoraciones':valoraciones})
 
-
 def generarinf(request):
     return render(request, 'generarinf.html')
 
@@ -264,24 +267,29 @@ def guardar_valoracion(request):
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
+from django.contrib.auth import logout
+
 def user_login(request):
     if request.method == 'POST':
         form = LoginForms(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = authenticate(request,
-                                username=cd['username'],
-                                password=cd['password'])
-            if user is not None:
-                if user.is_active:
+            try:
+                user = Users.objects.get(usuario=cd['username'])
+                if check_password(cd['password'], user.password):
                     login(request, user)
-                    return redirect('/home/valoraciones')
+                    print(f"User is authenticated: {request.user.is_authenticated}")
+                    
+                    # Redirigir
+                    next_url = request.GET.get('next', '/home/valoraciones/')
+                    return redirect(next_url)
                 else:
-                    messages.error(request, 'Tu cuenta está desactivada. Por favor, contacta al administrador.')
-            else:
-                messages.error(request, 'No se pudo completar el inicio de sesión. Intenta nuevamente.')
+                    messages.error(request, 'Credenciales inválidas. La contraseña es incorrecta.')
+            except Users.DoesNotExist:
+                messages.error(request, 'Credenciales inválidas. El usuario no existe.')
     else:
         form = LoginForms()
+
     return render(request, 'login.html', {'form': form})
 
 
@@ -289,17 +297,23 @@ def user_register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            # Crear el nuevo usuario con todos los campos necesarios
-            new_user = Users(
-                usuario=form.cleaned_data['username'],
-                empresa='Mi Empresa', 
-                nombre=form.cleaned_data['username'],
-                password=make_password(form.cleaned_data['password']),
-                estado=True 
-            )
-            new_user.save()
-
-            messages.success(request, 'Registration successful! You can now log in.')
+            cd = form.cleaned_data
+            if Users.objects.filter(usuario=cd['username']).exists():
+                messages.error(request, 'El nombre de usuario ya está en uso. Por favor, elige otro.')
+            else:
+                try:
+                    new_user = Users(
+                        usuario=cd['username'],
+                        empresa='Mi Empresa',
+                        nombre=cd['username'],
+                        password=make_password(cd['password']),
+                        estado=True
+                    )
+                    new_user.save()
+                    messages.success(request, 'Registro exitoso! Ahora puedes iniciar sesión.')
+                    return redirect('/home/login')
+                except IntegrityError:
+                    messages.error(request, 'Hubo un error al registrar el usuario. Intenta nuevamente.')
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
@@ -328,7 +342,6 @@ def exportar_excel(request):
             return HttpResponse(f"Error interno: {e}", status=500)
     else:
         return HttpResponse("Método no permitido", status=405)
-
 
 def contacto(request):
     if request.method == 'POST':
@@ -366,3 +379,9 @@ def contacto(request):
 
     return render(request, 'contacto.html')
 
+@login_required
+def sidebar(request):
+    user = request.user
+    user_id = user.uniqueid  # Asegúrate de que `uniqueid` es el campo correcto
+    print(f"User ID: {user_id}")
+    return render(request, 'sidebar.html', {'user_id': user_id})
