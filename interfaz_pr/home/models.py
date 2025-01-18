@@ -59,3 +59,23 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.usuario
+    
+class Valoracion(models.Model):
+    idv = models.AutoField(primary_key=True)
+    iduser = models.IntegerField()
+    modo = models.CharField(max_length=50)
+    ciudad = models.CharField(max_length=100)
+    distrito = models.CharField(max_length=100)
+    barrio = models.CharField(max_length=100)
+    tipo_vivienda = models.CharField(max_length=100)
+    metros_cuadrados = models.FloatField()
+    num_habitaciones = models.IntegerField()
+    num_banos = models.IntegerField()
+    planta = models.IntegerField()
+    terraza = models.BooleanField()
+    balcon = models.BooleanField()
+    ascensor = models.BooleanField()
+    estado_inmueble = models.CharField(max_length=50)
+    fecha_guardado = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'data"."ventas'

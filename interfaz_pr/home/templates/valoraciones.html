@@ -341,6 +341,7 @@
 
 
         function transformarAProyecto() {
+            const iduser = "{{user_id}}";
             const modo = "prospecto";
             const ciudad = document.getElementById('ciudad').value;
             const distrito = document.getElementById('distrito').value;
@@ -360,6 +361,7 @@
             const precio_esperado_unico = document.getElementById('precio-esperado-unico') ? document.getElementById('precio-esperado-unico').textContent.replace(/[^0-9.-]+/g, "") : null;
 
             const data = {
+                iduser,
                 modo,
                 ciudad,
                 distrito,
@@ -454,6 +456,7 @@
         });
         
         document.getElementById('valorar').addEventListener('click', function () {
+            const iduser = "{{user_id}}";
             const modo = "valoracion";
             const ciudad = document.getElementById('ciudad').value;
             const distrito = document.getElementById('distrito').value;
@@ -463,11 +466,12 @@
             const num_habitaciones = parseInt(document.getElementById('num-habitaciones').value, 10);
             const num_banos = parseInt(document.getElementById('num-banos').value, 10);
             const planta = document.getElementById('planta').value;
-            const terraza = document.getElementById('tiene-terraza').value === 'Sí' ? 1 : 0;
-            const balcon = document.getElementById('tiene-balcon').value === 'Sí' ? 1 : 0;
-            const ascensor = document.getElementById('tiene-ascensor').value === 'Sí' ? 1 : 0;
+            const terraza = parseInt(document.getElementById('tiene-terraza').value)
+            const balcon = parseInt(document.getElementById('tiene-balcon').value)
+            const ascensor = parseInt(document.getElementById('tiene-ascensor').value)
             const estado = document.getElementById('estado-inmueble').value;
             const data = {
+                iduser,
                 modo,
                 ciudad,
                 distrito,

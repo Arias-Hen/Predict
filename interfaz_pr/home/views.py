@@ -21,7 +21,7 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from functools import wraps
 from django.contrib.auth import get_user_model
-
+from .models import Valoracion
 
 def home(request):
     return render(request, 'home.html')
@@ -65,13 +65,16 @@ def valoraciones(request):
     return render(request, 'valoraciones.html', {'options_json': options_json, 'user_id': user_id, 'user_nombre': user_nombre})
 
 @csrf_exempt
+@login_required
 def ventas(request):
+    user_id = request.user.uniqueid
     context = []  
     context_json = '{}' 
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             context = {
+                'modo': data.get('modo', ''),
                 'ciudad': data.get('ciudad', ''),
                 'distrito': data.get('distrito', ''),
                 'barrio': data.get('barrio', ''),
@@ -119,10 +122,25 @@ def ventas(request):
         print(f"Error al leer el archivo CSV: {e}")
         options_json = '[]'
     valoraciones = []
-    file_path = os.path.join(settings.BASE_DIR, 'home', 'valoraciones.json')
     try:
-        with open(file_path, 'r') as file:
-            valoraciones = json.load(file)
+        valoraciones_qs = Valoracion.objects.filter(iduser=user_id)
+        for val in valoraciones_qs:
+            valoraciones.append({
+                'modo': val.modo,
+                'ciudad': val.ciudad,
+                'distrito': val.distrito,
+                'barrio': val.barrio,
+                'tipo_vivienda': val.tipo_vivienda,
+                'm2': val.metros_cuadrados,
+                'num_habitaciones': val.num_habitaciones,
+                'num_banos': val.num_banos,
+                'planta': val.planta,
+                'terraza': val.terraza,
+                'balcon': val.balcon,
+                'ascensor': val.ascensor,
+                'estado': val.estado_inmueble,
+                'fecha_guardado': val.fecha_guardado.strftime('%d/%m/%Y'),
+            })
     except FileNotFoundError:
         print("Archivo de valoraciones no encontrado.")
     return render(request, 'ventas.html', {'options_json': options_json, 'context_json': context_json, 'valoraciones':valoraciones})
@@ -228,51 +246,52 @@ def guardar_valoracion(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            nueva_valoracion = {
-                "modo":data.get("modo"),
-                "ciudad": data.get("ciudad"),
-                "distrito": data.get("distrito"),
-                "barrio": data.get("barrio"),
-                "tipo_vivienda": data.get("tipo_vivienda"),
-                "metros_cuadrados": data.get("m2"),
-                "num_habitaciones": data.get("num_habitaciones"),
-                "num_banos": data.get("num_banos"),
-                "planta": data.get("planta"),
-                "terraza": data.get("terraza"),
-                "balcon": data.get("balcon"),
-                "ascensor": data.get("ascensor"),
-                "estado_inmueble": data.get("estado"),
-                "fecha_guardado": datetime.now().strftime('%d/%m/%Y')  
-            }
-    
-            folder_path = os.path.join(settings.BASE_DIR, 'home')
-            file_path = os.path.join(folder_path, 'valoraciones.json')
 
-            if not os.path.exists(folder_path):
-                print("Carpeta no existe, creando...")
-                os.makedirs(folder_path)
+            # Crear una nueva instancia de Valoracion y guardarla en la base de datos
+            nueva_valoracion = Valoracion.objects.create(
+                idv = data.get("idv"),
+                iduser = data.get("iduser"),
+                modo=data.get("modo"),
+                ciudad=data.get("ciudad"),
+                distrito=data.get("distrito"),
+                barrio=data.get("barrio"),
+                tipo_vivienda=data.get("tipo_vivienda"),
+                metros_cuadrados=data.get("m2"),
+                num_habitaciones=data.get("num_habitaciones"),
+                num_banos=data.get("num_banos"),
+                planta=data.get("planta"),
+                terraza=bool(data.get("terraza")), 
+                balcon=bool(data.get("balcon")),   
+                ascensor=bool(data.get("ascensor")), 
+                estado_inmueble=data.get("estado"),
+            )
 
-            try:
-                with open(file_path, 'r') as file:
-                    valoraciones = json.load(file)
-            except FileNotFoundError:
-                print("Archivo no encontrado, creando uno nuevo...")
-                valoraciones = []
-
-            valoraciones.append(nueva_valoracion)
-
-            with open(file_path, 'w') as file:
-                json.dump(valoraciones, file, indent=4)
-                print("Datos guardados en el archivo:", file_path)
-
-            return JsonResponse({"message": "Valoración guardada correctamente", "data": nueva_valoracion})
+            return JsonResponse({
+                "message": "Valoración guardada correctamente",
+                "data": {
+                    "idv" : nueva_valoracion.idv,
+                    "iduser": nueva_valoracion.iduser,
+                    "modo": nueva_valoracion.modo,
+                    "ciudad": nueva_valoracion.ciudad,
+                    "distrito": nueva_valoracion.distrito,
+                    "barrio": nueva_valoracion.barrio,
+                    "tipo_vivienda": nueva_valoracion.tipo_vivienda,
+                    "metros_cuadrados": nueva_valoracion.metros_cuadrados,
+                    "num_habitaciones": nueva_valoracion.num_habitaciones,
+                    "num_banos": nueva_valoracion.num_banos,
+                    "planta": nueva_valoracion.planta,
+                    "terraza": nueva_valoracion.terraza,
+                    "balcon": nueva_valoracion.balcon,
+                    "ascensor": nueva_valoracion.ascensor,
+                    "estado_inmueble": nueva_valoracion.estado_inmueble,
+                    "fecha_guardado": nueva_valoracion.fecha_guardado,
+                }
+            })
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Datos inválidos"}, status=400)
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
-
-from django.contrib.auth import logout
 
 def user_login(request):
     if request.method == 'POST':
@@ -292,7 +311,6 @@ def user_login(request):
     else:
         form = LoginForms()
     return render(request, 'login.html', {'form': form})
-
 
 def user_register(request):
     if request.method == 'POST':
@@ -318,7 +336,6 @@ def user_register(request):
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
-
 
 @csrf_exempt
 def exportar_excel(request):

@@ -152,7 +152,7 @@
                             <div class="row mt-4">
                                 <div class="col-md-5">
                                     <h4 class="text-end">Datos Adicionales</h4>
-                                    <input type="text" class="form-control small-textbox" placeholder="" />
+                                    <input type="text" class="form-control small-textbox" placeholder="Datos" />
                                 </div>
                                 <div class="col-mt-50">
                                     <div class="text-center mt-4">
@@ -394,17 +394,17 @@
                         <td>{{ valoracion.modo }}</td>
                         <td></td> <!-- Precio vacío por ahora -->
                         <td>{{ valoracion.ciudad }}</td>
-                        <td>{{ valoracion.planta }}</td>
-                            <td>{{ valoracion.distrito }}</td>
-                            <td>{{ valoracion.barrio }}</td>
-                            <td>{{ valoracion.tipo_vivienda }}</td>
-                            <td>{{ valoracion.estado_inmueble }}</td>
-                            <td>{{ valoracion.metros_cuadrados }}</td>
-                            <td>{{ valoracion.num_habitaciones }}</td>
-                            <td>{{ valoracion.num_banos }}</td>
-                            <td>{{ valoracion.terraza }}</td>
-                            <td>{{ valoracion.balcon }}</td>
-                            <td>{{ valoracion.ascensor }}</td>
+                        <td class="hidden-column">{{ valoracion.planta }}</td>
+                        <td class="hidden-column" >{{ valoracion.distrito }}</td>
+                        <td class="hidden-column">{{ valoracion.barrio }}</td>
+                        <td class="hidden-column">{{ valoracion.tipo_vivienda }}</td>
+                        <td class="hidden-column">{{ valoracion.estado}}</td>
+                        <td class="hidden-column">{{ valoracion.m2 }}</td>
+                        <td class="hidden-column">{{ valoracion.num_habitaciones }}</td>
+                        <td class="hidden-column">{{ valoracion.num_banos }}</td>
+                        <td class="hidden-column">{{ valoracion.terraza }}</td>
+                        <td class="hidden-column">{{ valoracion.balcon }}</td>
+                        <td class="hidden-column">{{ valoracion.ascensor }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -454,8 +454,8 @@
                 11: "8"
             };
             const ascensorMap = {
-                0: "No",
-                1: "Sí"
+                'false': "No",
+                'true': "Sí"
             };
             const estadoInmuebleMap = {
                 0: "Obra nueva",
@@ -464,8 +464,8 @@
                 3: "No declara"
             };
             const terrazaBalconMap = {
-                0: "No",
-                1: "Sí"
+                'false': "No",
+                'true': "Sí"
             };
             const selectedRows = [];
 
@@ -484,14 +484,15 @@
                         metros_cuadrados: row.querySelector('td:nth-child(11)').textContent.trim(),
                         num_habitaciones: row.querySelector('td:nth-child(12)').textContent.trim(),
                         num_banos: row.querySelector('td:nth-child(13)').textContent.trim(),
-                        terraza: terrazaBalconMap[row.querySelector('td:nth-child(14)').textContent.trim()],
-                        balcon: terrazaBalconMap[row.querySelector('td:nth-child(15)').textContent.trim()],
-                        ascensor: ascensorMap[row.querySelector('td:nth-child(16)').textContent.trim()],
+                        terraza: row.querySelector('td:nth-child(14)').textContent.trim(),
+                        balcon: row.querySelector('td:nth-child(15)').textContent.trim(),
+                        ascensor: row.querySelector('td:nth-child(16)').textContent.trim(),
                     };
                     selectedRows.push(rowData);
+                    console.log("DATOS DEL EXCEL", rowData)
                 }
             });
-
+            
             if (selectedRows.length === 0) {
                 alert('Por favor, seleccione al menos una fila para exportar.');
                 return;
@@ -701,6 +702,10 @@
 </script>
 
 <style>
+    .hidden-column {
+        display: none;
+    }
+
     .container-fluid {
         padding: 0;
     }
