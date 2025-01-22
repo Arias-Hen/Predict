@@ -41,8 +41,6 @@ def valoraciones(request):
     user = request.user
     user_id = user.uniqueid
     user_nombre = user.nombre
-    print(f"EL ID DEL USUARIO: {user_id}")
-    print(f"EL ID DEL USUARIO: {user}") 
     try:
         with open('distritos.csv', newline='', encoding='ISO-8859-1') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -67,7 +65,9 @@ def valoraciones(request):
 @csrf_exempt
 @login_required
 def ventas(request):
-    user_id = request.user.uniqueid
+    user = request.user
+    user_id = user.uniqueid
+    user_nombre = user.nombre
     context = []  
     context_json = '{}' 
     if request.method == 'POST':
@@ -78,6 +78,7 @@ def ventas(request):
                 'ciudad': data.get('ciudad', ''),
                 'distrito': data.get('distrito', ''),
                 'barrio': data.get('barrio', ''),
+                'calle': data.get('calle', ''),
                 'tipo_vivienda': data.get('tipo_vivienda', ''),
                 'm2': data.get('m2', ''),
                 'num_habitaciones': data.get('num_habitaciones', ''),
@@ -130,6 +131,7 @@ def ventas(request):
                 'ciudad': val.ciudad,
                 'distrito': val.distrito,
                 'barrio': val.barrio,
+                'calle': val.calle,
                 'tipo_vivienda': val.tipo_vivienda,
                 'm2': val.metros_cuadrados,
                 'num_habitaciones': val.num_habitaciones,
@@ -143,7 +145,7 @@ def ventas(request):
             })
     except FileNotFoundError:
         print("Archivo de valoraciones no encontrado.")
-    return render(request, 'ventas.html', {'options_json': options_json, 'context_json': context_json, 'valoraciones':valoraciones})
+    return render(request, 'ventas.html', {'options_json': options_json, 'context_json': context_json, 'valoraciones':valoraciones, 'user_nombre': user_nombre})
 
 @csrf_exempt
 def informes(request):
@@ -156,6 +158,7 @@ def informes(request):
                 'ciudad': data.get('ciudad', ''),
                 'distrito': data.get('distrito', ''),
                 'barrio': data.get('barrio', ''),
+                'calle': data.get('calle', ''),
                 'tipo_vivienda': data.get('tipo_vivienda', ''),
                 'm2': data.get('m2', ''),
                 'num_habitaciones': data.get('num_habitaciones', ''),
@@ -242,12 +245,26 @@ def get_barrios(request, distrito):
         print(f"Error al leer el archivo CSV para barrios: {e}")
         return JsonResponse({'barrio': []})
     
+def get_calles(request, barrios):
+    calle = []
+    try:
+        with open('tb_todo_precio_m2.csv', newline='', encoding='ISO-8859-1') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row['barrio'] == barrios:
+                    if not any(c['name'] == row['calle'] for c in calle):
+                        calle.append({'id': row['calle'], 'name': row['calle']})
+
+        return JsonResponse({'calle': calle})
+
+    except Exception as e:
+        print(f"Error al leer el archivo CSV para barrios: {e}")
+        return JsonResponse({'calle': []})
+    
 def guardar_valoracion(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-
-            # Crear una nueva instancia de Valoracion y guardarla en la base de datos
             nueva_valoracion = Valoracion.objects.create(
                 idv = data.get("idv"),
                 iduser = data.get("iduser"),
@@ -255,6 +272,7 @@ def guardar_valoracion(request):
                 ciudad=data.get("ciudad"),
                 distrito=data.get("distrito"),
                 barrio=data.get("barrio"),
+                calle=data.get("calle"),
                 tipo_vivienda=data.get("tipo_vivienda"),
                 metros_cuadrados=data.get("m2"),
                 num_habitaciones=data.get("num_habitaciones"),
@@ -275,6 +293,7 @@ def guardar_valoracion(request):
                     "ciudad": nueva_valoracion.ciudad,
                     "distrito": nueva_valoracion.distrito,
                     "barrio": nueva_valoracion.barrio,
+                    "calle": nueva_valoracion.calle,
                     "tipo_vivienda": nueva_valoracion.tipo_vivienda,
                     "metros_cuadrados": nueva_valoracion.metros_cuadrados,
                     "num_habitaciones": nueva_valoracion.num_habitaciones,
@@ -389,7 +408,7 @@ def contacto(request):
                 asunto,
                 mensaje,
                 correo_electronico, 
-                ['jhonhendrick.ja@gmail.com'], 
+                ['jhonhendrick.ins@gmail.com'], 
                 fail_silently=False,
             )
             return JsonResponse({"message": "Formulario enviado correctamente. ¡Gracias por tu interés!"})

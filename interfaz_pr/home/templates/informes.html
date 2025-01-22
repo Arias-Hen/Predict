@@ -36,6 +36,10 @@
 
                                     <label for="distrito" class="form-label mt-3">Distrito:</label>
                                     <select id="distrito" class="form-select" onchange="cargarBarrios()"></select>
+                                    <label for="barrio" class="form-label">Barrio:</label>
+                                    <select id="barrio" class="form-select" onchange="cargarCalle()"><option value="Centro">Centro</option></select> 
+                                    <label for="calle" class="form-label">Calle:</label>
+                                    <select id="calle" class="form-select"><option value="Centro">Centro</option></select>
                                     <label for="tipo-vivienda" class="form-label mt-3">Tipo de vivienda:</label>
                                     <select id="tipo-vivienda" class="form-select">
                                         <option value="0">Estudio</option>
@@ -46,9 +50,6 @@
                                         <option value="5">Chalet pareado</option>
                                         <option value="6">Casa o chalet</option>
                                     </select>
-
-                                    <label for="barrio" class="form-label">Barrio:</label>
-                                    <select id="barrio" class="form-select">
                                     </select>
                                 </div>
                                 <!-- Segunda columna -->
@@ -152,7 +153,7 @@
                             <div class="row mt-4">
                                 <div class="col-md-5">
                                     <h4 class="text-end">Datos Adicionales</h4>
-                                    <input type="text" class="form-control small-textbox" placeholder="" />
+                                    <input type="text" class="form-control small-textbox" placeholder="Datos" />
                                 </div>
                                 <div class="col-mt-50">
                                     <div class="text-center mt-4">
@@ -250,7 +251,6 @@
             .catch(error => console.error('Error al cargar los distritos:', error));
     }
 
-
     function cargarBarrios() {
 
         const distritoSeleccionado = document.getElementById('distrito').value;
@@ -292,6 +292,48 @@
             })
             .catch(error => console.error('Error al cargar los barrios:', error));
     }
+    
+    function cargarCalle() {
+            const barrioSeleccionado = document.getElementById('barrio').value;
+
+            if (!barrioSeleccionado) {
+                console.log("No se seleccionó ningún distrito.");
+                document.getElementById('calle').innerHTML = '';
+                return;
+
+            }
+            console.log(`URL de la solicitud: /home/get_calles/${encodeURIComponent(barrioSeleccionado)}/`);
+
+            fetch(`/home/get_calles/${encodeURIComponent(barrioSeleccionado)}/`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos recibidos del servidor:', data);
+
+                    const calleSelect = document.getElementById('calle');
+                    calleSelect.innerHTML = '';
+                    const defaultOption = document.createElement('option');
+                    defaultOption.textContent = "Seleccione una calle";
+                    calleSelect.appendChild(defaultOption);
+
+                    data.calle.forEach(calle => {
+                        const option = document.createElement('option');
+                        option.value = calle.id;
+                        option.textContent = calle.name;
+                        calleSelect.appendChild(option);
+                    });
+                    const barrioSe = JSON.parse('{{ context_json|escapejs }}');
+                    const calle = ciudadSe.calle;
+                    if (calle) {
+                        const seleccion = Array.from(calleSelect.options).find(option => option.value === calle);
+                        if (seleccion) {
+                            seleccion.selected = true;
+                            calleSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
+                })
+                .catch(error => console.error('Error al cargar los barrios:', error));
+        }
+
     document.addEventListener('DOMContentLoaded', function () {
         const ciudadSe = JSON.parse('{{ context_json|escapejs }}');
         console.log("JEISON", ciudadSe)
@@ -348,7 +390,7 @@
     function filtrar() {
         const welcomeTitle = document.querySelector('.welcome-title');
         if (welcomeTitle) {
-            welcomeTitle.textContent = "MIS INFORMES";
+            welcomeTitle.textContent = "MIS VENTAS";
         }
 
         const mainContent = document.getElementById('main-content');
@@ -394,17 +436,18 @@
                         <td>{{ valoracion.modo }}</td>
                         <td></td> <!-- Precio vacío por ahora -->
                         <td>{{ valoracion.ciudad }}</td>
-                        <td>{{ valoracion.planta }}</td>
-                            <td>{{ valoracion.distrito }}</td>
-                            <td>{{ valoracion.barrio }}</td>
-                            <td>{{ valoracion.tipo_vivienda }}</td>
-                            <td>{{ valoracion.estado_inmueble }}</td>
-                            <td>{{ valoracion.metros_cuadrados }}</td>
-                            <td>{{ valoracion.num_habitaciones }}</td>
-                            <td>{{ valoracion.num_banos }}</td>
-                            <td>{{ valoracion.terraza }}</td>
-                            <td>{{ valoracion.balcon }}</td>
-                            <td>{{ valoracion.ascensor }}</td>
+                        <td class="hidden-column">{{ valoracion.planta }}</td>
+                        <td class="hidden-column" >{{ valoracion.distrito }}</td>
+                        <td class="hidden-column">{{ valoracion.barrio }}</td>
+                        <td class="hidden-column">{{ valoracion.calle }}</td>
+                        <td class="hidden-column">{{ valoracion.tipo_vivienda }}</td>
+                        <td class="hidden-column">{{ valoracion.estado}}</td>
+                        <td class="hidden-column">{{ valoracion.m2 }}</td>
+                        <td class="hidden-column">{{ valoracion.num_habitaciones }}</td>
+                        <td class="hidden-column">{{ valoracion.num_banos }}</td>
+                        <td class="hidden-column">{{ valoracion.terraza }}</td>
+                        <td class="hidden-column">{{ valoracion.balcon }}</td>
+                        <td class="hidden-column">{{ valoracion.ascensor }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -412,10 +455,16 @@
         </div>
 
         <div class="table-container" style="text-align: center; margin-top: 20px;">
-            <button class="open-record btn btn-info btn-primary" style="margin-bottom: 10px; margin-left: 10px;">Seleccionar</button>
+            <button class="export-to-excel btn btn-success btn-primary" style="margin-bottom: 10px;">
+                Exportar a Excel
+            </button>
+            <button class="open-record btn btn-info btn-primary" style="margin-bottom: 10px; margin-left: 10px;">Abrir</button>
         </div>
         `;
         document.body.addEventListener('click', function (event) {
+            if (event.target && event.target.matches('.export-to-excel')) {
+                excelAbrir();
+            }
             if (event.target && event.target.matches('.open-record')) {
                 excelAbrir();
             }
@@ -448,8 +497,8 @@
                 11: "8"
             };
             const ascensorMap = {
-                0: "No",
-                1: "Sí"
+                'false': "No",
+                'true': "Sí"
             };
             const estadoInmuebleMap = {
                 0: "Obra nueva",
@@ -458,8 +507,8 @@
                 3: "No declara"
             };
             const terrazaBalconMap = {
-                0: "No",
-                1: "Sí"
+                'false': "No",
+                'true': "Sí"
             };
             const selectedRows = [];
 
@@ -473,19 +522,21 @@
                         planta: plantaMap[row.querySelector('td:nth-child(6)').textContent.trim()],
                         distrito: row.querySelector('td:nth-child(7)').textContent.trim(),
                         barrio: row.querySelector('td:nth-child(8)').textContent.trim(),
-                        tipo_vivienda: viviendaMap[row.querySelector('td:nth-child(9)').textContent.trim()],
-                        estado_inmueble: estadoInmuebleMap[row.querySelector('td:nth-child(10)').textContent.trim()],
-                        metros_cuadrados: row.querySelector('td:nth-child(11)').textContent.trim(),
-                        num_habitaciones: row.querySelector('td:nth-child(12)').textContent.trim(),
-                        num_banos: row.querySelector('td:nth-child(13)').textContent.trim(),
-                        terraza: terrazaBalconMap[row.querySelector('td:nth-child(14)').textContent.trim()],
-                        balcon: terrazaBalconMap[row.querySelector('td:nth-child(15)').textContent.trim()],
-                        ascensor: ascensorMap[row.querySelector('td:nth-child(16)').textContent.trim()],
+                        calle: row.querySelector('td:nth-child(9)').textContent.trim(),
+                        tipo_vivienda: viviendaMap[row.querySelector('td:nth-child(10)').textContent.trim()],
+                        estado_inmueble: estadoInmuebleMap[row.querySelector('td:nth-child(11)').textContent.trim()],
+                        metros_cuadrados: row.querySelector('td:nth-child(12)').textContent.trim(),
+                        num_habitaciones: row.querySelector('td:nth-child(13)').textContent.trim(),
+                        num_banos: row.querySelector('td:nth-child(14)').textContent.trim(),
+                        terraza: row.querySelector('td:nth-child(15)').textContent.trim(),
+                        balcon: row.querySelector('td:nth-child(16)').textContent.trim(),
+                        ascensor: row.querySelector('td:nth-child(17)').textContent.trim(),
                     };
                     selectedRows.push(rowData);
+                    console.log("DATOS DEL EXCEL", rowData)
                 }
             });
-
+            
             if (selectedRows.length === 0) {
                 alert('Por favor, seleccione al menos una fila para exportar.');
                 return;
@@ -525,16 +576,18 @@
                         planta: row.querySelector('td:nth-child(6)').textContent.trim(),
                         distrito: row.querySelector('td:nth-child(7)').textContent.trim(),
                         barrio: row.querySelector('td:nth-child(8)').textContent.trim(),
-                        tipo_vivienda: row.querySelector('td:nth-child(9)').textContent.trim(),
-                        estado_inmueble: row.querySelector('td:nth-child(10)').textContent.trim(),
-                        metros_cuadrados: row.querySelector('td:nth-child(11)').textContent.trim(),
-                        num_habitaciones: row.querySelector('td:nth-child(12)').textContent.trim(),
-                        num_banos: row.querySelector('td:nth-child(13)').textContent.trim(),
-                        terraza: row.querySelector('td:nth-child(14)').textContent.trim(),
-                        balcon: row.querySelector('td:nth-child(15)').textContent.trim(),
-                        ascensor: row.querySelector('td:nth-child(16)').textContent.trim(),
+                        calle: row.querySelector('td:nth-child(9)').textContent.trim(),
+                        tipo_vivienda: row.querySelector('td:nth-child(10)').textContent.trim(),
+                        estado_inmueble: row.querySelector('td:nth-child(11)').textContent.trim(),
+                        metros_cuadrados: row.querySelector('td:nth-child(12)').textContent.trim(),
+                        num_habitaciones: row.querySelector('td:nth-child(13)').textContent.trim(),
+                        num_banos: row.querySelector('td:nth-child(14)').textContent.trim(),
+                        terraza: row.querySelector('td:nth-child(15)').textContent.trim(),
+                        balcon: row.querySelector('td:nth-child(16)').textContent.trim(),
+                        ascensor: row.querySelector('td:nth-child(17)').textContent.trim(),
                     };
                     selectedRows.push(rowData);
+                    console.log("DATOS SELECCIONADOS ",selectedRows)
                 }
             });
 
@@ -565,6 +618,9 @@
 
                                     <label for="barrio" class="form-label">Barrio:</label>
                                     <input type="text" id="barrio" class="form-control" value="${selectedRecord.barrio}" readonly>
+
+                                    <label for="calle" class="form-label">Calle:</label>
+                                    <input type="text" id="calle" class="form-control" value="${selectedRecord.calle}" readonly>
                                 </div>
                                 <!-- Segunda columna -->
                                 <div class="col-md-4">
@@ -660,11 +716,11 @@
                 </div>
             </div>
         `;
-        document.body.addEventListener('click', function (event) {
-            if (event.target && event.target.matches('.filter-button')) {
-                filtrar();
-            }
-        });
+            document.body.addEventListener('click', function (event) {
+                if (event.target && event.target.matches('.filter-button')) {
+                    filtrar();
+                }
+            });
         }
     };
 
@@ -695,6 +751,10 @@
 </script>
 
 <style>
+    .hidden-column {
+        display: none;
+    }
+
     .container-fluid {
         padding: 0;
     }
@@ -753,7 +813,7 @@
         text-decoration: underline;
         font-weight: bold;
     }
-    
+
     h1,
     h4.text-center,
     h4.text {
@@ -761,6 +821,7 @@
         text-decoration: underline;
         font-weight: bold;
     }
+
     .tb {
         background: #ffffff;
     }

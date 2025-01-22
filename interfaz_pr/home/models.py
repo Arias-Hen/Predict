@@ -67,6 +67,7 @@ class Valoracion(models.Model):
     ciudad = models.CharField(max_length=100)
     distrito = models.CharField(max_length=100)
     barrio = models.CharField(max_length=100)
+    calle = models.CharField(max_length=100)
     tipo_vivienda = models.CharField(max_length=100)
     metros_cuadrados = models.FloatField()
     num_habitaciones = models.IntegerField()
