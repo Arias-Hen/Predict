@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import login_required
 from functools import wraps
 from django.contrib.auth import get_user_model
 from .models import Valoracion
+from urllib.parse import unquote
 
 def home(request):
     return render(request, 'home.html')
@@ -216,6 +217,7 @@ def generarinf(request):
     return render(request, 'generarinf.html')
 
 def get_distritos(request, ciudad):
+    ciudad = unquote(ciudad)
     print(f"City received: {ciudad}")
     distritos = []
     try:
