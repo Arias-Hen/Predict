@@ -234,6 +234,7 @@ def get_distritos(request, ciudad):
         return JsonResponse({'distritos': []})
     
 def get_barrios(request, distrito):
+    distrito = unquote(distrito)
     barrios = []
     try:
         with open('distrito_barrio.csv', newline='', encoding='ISO-8859-1') as csvfile:
@@ -249,6 +250,7 @@ def get_barrios(request, distrito):
         return JsonResponse({'barrio': []})
     
 def get_calles(request, barrios):
+    barrios = unquote(barrios)
     calle = []
     try:
         with open('tb_todo_precio_m2.csv', newline='', encoding='ISO-8859-1') as csvfile:
