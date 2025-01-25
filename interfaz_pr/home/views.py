@@ -216,6 +216,7 @@ def generarinf(request):
     return render(request, 'generarinf.html')
 
 def get_distritos(request, ciudad):
+    print(f"City received: {ciudad}")
     distritos = []
     try:
         with open('distritos.csv', newline='', encoding='ISO-8859-1') as csvfile:
