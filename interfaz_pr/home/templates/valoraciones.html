@@ -25,7 +25,7 @@
                 <div class="row mt-5">
 
                     <!-- Formulario de Valoración -->
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-6 form-container">
                         <h4 class="text-center">VALORACIÓN</h4>
                         <form id="valuation-form">
                             {% csrf_token %}
@@ -579,6 +579,13 @@
     </script>
 </body>
 <style>
+    body {
+        background-color: #dcdcdc;
+
+    }
+    .form-container {
+        background: #dcdcdc;
+    }
     .welcome-banner {
         background-color: white;
         text-align: center;
@@ -590,19 +597,29 @@
     .welcome-title {
         font-size: 2rem;
         font-weight: bold;
+        text-decoration: underline;
         color: blue;
     }
-
-    .form-container {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    h1,
+    h4.text-center,
+    h4.text {
+        color: blue;
+        text-decoration: underline;
+        font-weight: bold;
     }
 
+    h1,
+    h4.text-center,
+    h4.text {
+        color: blue;
+        text-decoration: underline;
+        font-weight: bold;
+    }
     .btn-primary {
-        background-color: #007bff;
-        color: #fff;
+        color: #ba31dd;
+        font-weight: bold;
+        background-color: #ffffff;
+        border: none;
     }
 
     .btn-secondary {
