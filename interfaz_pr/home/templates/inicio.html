@@ -4,221 +4,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba</title>
+    <title>PredictBuid</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 {% extends 'base.html' %}
 {% block content %}
 
-<body>
-    <section class="container-fluid mt-5">
-        <div class="row">
-            <div class="col-md-7 mt-5 ms-mr-5">
-                <h1 class="text-center">TRANSFORMA LA TASACIÓN INMOBILIARIA CON PREDICTBUILD</h1>
-                <p class="text-justify mt-3">
-                    Predictbuild es un software revolucionario que simplifica y optimiza el proceso de tasación de
-                    propiedades utilizando inteligencia artificial avanzada. Diseñado para profesionales del sector
-                    inmobiliario, Predictbuild no solo facilita la estimación precisa de precios, sino que ofrece
-                    herramientas estratégicas para la toma de decisiones fundamentadas.
-                </p>
-            </div>
-            <div class="col-md-2">
-                <div class="row justify-content-center">
-                    <div class="col-md-20">
-                        <div class="card-body">
-                            <form>
-                                <div class="circle-cont col-md-6 text-start">
-                                    <h3 class="text-center">BIENVENIDO A PREDICTBUILD</h3>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="circle-container2 col-md-6 text-start">
-                                                <h5>INGRESAR DATOS</h5>
-                                                <div class="mb-2">
-                                                    <label for="metros" class="form-label fs-6">Metros Cuadrados
-                                                        Construidos</label>
-                                                    <input type="number" class="form-control form-control-sm"
-                                                        id="metros">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="tipoVivienda" class="form-label fs-6">Tipo de
-                                                        Vivienda</label>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        id="tipoVivienda">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="habitaciones" class="form-label fs-6">Número de
-                                                        Habitaciones</label>
-                                                    <input type="number" class="form-control form-control-sm"
-                                                        id="habitaciones">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="banos" class="form-label fs-6">Número de
-                                                        Baños</label>
-                                                    <input type="number" class="form-control form-control-sm"
-                                                        id="banos">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="reforma" class="form-label fs-6">Reforma</label>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        id="reforma">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="barrio" class="form-label fs-6">Barrio</label>
-                                                    <input type="text" class="form-control form-control-sm" id="barrio">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label for="zona" class="form-label fs-6">Zona del
-                                                        Barrio</label>
-                                                    <input type="text" class="form-control form-control-sm" id="zona">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="circle-container">
-                                                <h5>INGRESAR DATOS</h5>
-                                                <p>Terraza/ Patio</p>
-                                                <div>
-                                                    <input type="radio" id="terraza-si" name="terraza" value="SI">
-                                                    <label for="terraza-si">SI</label>
-
-                                                    <input type="radio" id="terraza-no" name="terraza" value="NO">
-                                                    <label for="terraza-no">NO</label>
-                                                </div>
-                                                <p>Ascensor</p>
-                                                <div>
-                                                    <input type="radio" id="ascensor-si" name="ascensor" value="SI">
-                                                    <label for="ascensor-si">SI</label>
-
-                                                    <input type="radio" id="ascensor-no" name="ascensor" value="NO">
-                                                    <label for="ascensor-no">NO</label>
-                                                </div>
-                                            </div>
-                                            <div class="rectangle-container">
-                                                <h5>COMISIÓN DE LA INMOBILIARIA</h5>
-                                                <label for="metros" class="form-label fs-6">Comisión estimada
-                                                    (euros)</label>
-                                                <input type="text" class="form-control" placeholder="">
-                                            </div>
-
-                                            <div class="rectangle-container">
-                                                <h5>RESULTADOS</h5>
-                                                <label for="metros" class="form-label fs-6">Rango de precio estimado
-                                                    (euros)</label>
-                                                <input type="text" class="form-control" placeholder="">
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-center mt-6">
-                                            <button type="submit" class="btn btn-primary btn-sm">Calcular</button>
-                                        </div>
+<section class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-12 col-md-7 mt-5 mx-auto px-5">
+            <h1 class="text-center">TRANSFORMA LA TASACIÓN INMOBILIARIA CON PREDICTBUILD</h1>
+            <p class="text-justify mt-3">
+                Predictbuild es un software revolucionario que simplifica y optimiza el proceso de tasación de
+                propiedades utilizando inteligencia artificial avanzada. Diseñado para profesionales del sector
+                inmobiliario, Predictbuild no solo facilita la estimación precisa de precios, sino que ofrece
+                herramientas estratégicas para la toma de decisiones fundamentadas.
+            </p>
+        </div>
+        <div class="col-12 col-md-5 mb-4">
+            <div class="card-body">
+                <form>
+                    <div class="circle-cont text-center p-3 mb-4"
+                        style="border: 3px solid #2a00a2; border-radius: 20px;">
+                        <h3>BIENVENIDO A PREDICTBUILD</h3>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <h5>INGRESAR DATOS</h5>
+                                <div class="mb-3">
+                                    <label for="metros" class="form-label">Metros Cuadrados Construidos</label>
+                                    <input type="number" class="form-control" id="metros">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipoVivienda" class="form-label">Tipo de Vivienda</label>
+                                    <input type="text" class="form-control" id="tipoVivienda">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="habitaciones" class="form-label">Número de Habitaciones</label>
+                                    <input type="number" class="form-control" id="habitaciones">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="banos" class="form-label">Número de Baños</label>
+                                    <input type="number" class="form-control" id="banos">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reforma" class="form-label">Reforma</label>
+                                    <input type="text" class="form-control" id="reforma">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="barrio" class="form-label">Barrio</label>
+                                    <input type="text" class="form-control" id="barrio">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="zona" class="form-label">Zona del Barrio</label>
+                                    <input type="text" class="form-control" id="zona">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="circle-container text-center p-3"
+                                    style="border: 3px solid #2a00a2; border-radius: 50%;">
+                                    <h5>INGRESAR DATOS</h5>
+                                    <p>Terraza/ Patio</p>
+                                    <div>
+                                        <input type="radio" id="terraza-si" name="terraza" value="SI">
+                                        <label for="terraza-si">SI</label>
+                                        <input type="radio" id="terraza-no" name="terraza" value="NO">
+                                        <label for="terraza-no">NO</label>
                                     </div>
-                            </form>
+                                    <p>Ascensor</p>
+                                    <div>
+                                        <input type="radio" id="ascensor-si" name="ascensor" value="SI">
+                                        <label for="ascensor-si">SI</label>
+                                        <input type="radio" id="ascensor-no" name="ascensor" value="NO">
+                                        <label for="ascensor-no">NO</label>
+                                    </div>
+                                </div>
+                                <div class="rectangle-container text-center p-3 mb-4"
+                                    style="border: 3px solid #2a00a2; border-radius: 20px;">
+                                    <h5>COMISIÓN DE LA INMOBILIARIA</h5>
+                                    <input type="text" class="form-control" placeholder="Comisión estimada (euros)">
+                                </div>
+
+                                <div class="rectangle-container text-center p-3 mb-4"
+                                    style="border: 3px solid #2a00a2; border-radius: 20px;">
+                                    <h5>RESULTADOS</h5>
+                                    <input type="text" class="form-control"
+                                        placeholder="Rango de precio estimado (euros)">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <button type="submit" class="btn btn-primary w-100">Calcular</button>
+                </form>
             </div>
-    </section>
-</body>
-<style>
-    .text-justify {
-        padding-left: 6rem; 
-        padding-right: 4rem; 
-        font-size: 1.5rem;
-    }
-    .container-fluid {
-        padding-left: 2rem; 
-    }
-    body {
-        background-color: #f0f0f0;
-    }
-    h1 {
-        color: #062f86;
-    }
-    .circle-cont {
-        border: 3px solid #2a00a2;
-        border-radius: 20px;
-        padding: 15px;
-        text-align: center;
-        margin: 20px auto;
-        width: 750px;
-        height: 750px;
-    }
+        </div>
+    </div>
+</section>
 
-    .circle-container {
-        border: 3px solid #2a00a2;
-        border-radius: 50%;
-        padding: 20px;
-        text-align: center;
-        margin: 20px auto;
-        width: 200px;
-        height: 200px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    .circle-container2 {
-        border: 3px solid #2a00a2;
-        border-radius: 20px;
-        padding: 20px;
-        text-align: center;
-        margin: 20px auto;
-        width: 280px;
-        height: 600px;
-    }
-
-    .circle-container h5 {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: -30px;
-        color: #800080;
-    }
-
-    .circle-container2 h5 {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: -30px;
-        color: #800080;
-    }
-
-    .rectangle-container {
-        border: 3px solid #2a00a2;
-        border-radius: 20px;
-        padding: 15px;
-        text-align: center;
-        margin: 20px auto;
-        width: 280px;
-    }
-
-    .rectangle-container h5 {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: -25px;
-        color: #800080;
-    }
-
-    .form-control {
-        border: none;
-        text-align: center;
-    }
-
-    .form-label,
-    .form-control {
-        font-weight: bold;
-    }
-
-    .form-label {
-        white-space: nowrap;
-    }
-
-    .circle-container2 .mb-2 {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-</style>
+{% endblock %}
 
 </html>
-{% endblock %}

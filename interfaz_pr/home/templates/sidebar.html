@@ -1,5 +1,9 @@
 <div class="container-fluid d-flex">
-    <div class="sidebar custom-sidebar d-flex flex-column align-items-center">
+    <!-- Botón hamburguesa para móviles -->
+    <button class="btn btn-primary d-md-none m-3" id="sidebarToggle">☰ Menú</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar custom-sidebar d-flex flex-column align-items-center" id="sidebar">
         <div class="bg-primary text-white p-3 w-100 text-center">
             <h5>{{ user_nombre }}</h5>
             <p>hola@unsitiogenial.es</p>
@@ -11,6 +15,8 @@
             <a href="#" id="generar-informe" class="sidebar-link">GENERAR INFORME</a>
         </div>
     </div>
+
+    <!-- Contenido principal -->
     <div class="content flex-grow-1">
         {% block content %}
         {% endblock %}
@@ -18,28 +24,25 @@
 </div>
 
 <style>
+    /* Ajustes generales */
     .container-fluid {
         padding: 0;
     }
+
+    /* Sidebar predeterminado */
     .sidebar {
         background-color: #ccd0ee;
-        height: 99vh;
+        height: 100vh;
         padding: 0;
-    }
-
-    .custom-sidebar {
         width: 250px;
-    }
-
-    .sidebar div {
-        margin: 0;
+        transition: transform 0.3s ease-in-out;
     }
 
     .sidebar a {
         color: rgb(0, 0, 0);
         text-decoration: none;
         display: block;
-        margin-bottom: 50px;
+        margin-bottom: 20px;
         font-weight: bold;
         font-size: 1.25rem;
         padding-left: 15px;
@@ -48,4 +51,35 @@
     .sidebar a:hover {
         background-color: #a6b2c3;
     }
+
+    /* Menú oculto en móviles */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            background-color: #ccd0ee;
+            z-index: 1000;
+        }
+
+        .sidebar.show {
+            left: 0;
+        }
+    }
+
+    /* Botón hamburguesa */
+    #sidebarToggle {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        z-index: 1100;
+    }
 </style>
+
+<script>
+    document.getElementById("sidebarToggle").addEventListener("click", function () {
+        document.getElementById("sidebar").classList.toggle("show");
+    });
+</script>

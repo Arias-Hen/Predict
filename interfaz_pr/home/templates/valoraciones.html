@@ -1,10 +1,11 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PredictBuild Dashboard</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
@@ -12,38 +13,47 @@
     </noscript>
 
     {% extends 'sidebar.html' %}
+</head>
+
+<body>
     {% block content %}
     <div class="welcome-banner">
         <h1 class="welcome-title">BIENVENIDO A PROJECTBUILD</h1>
     </div>
-</head>
 
-<body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-10 content">
+            <div class="col-12 col-md-10 offset-md-1 content">
                 <div class="row mt-5">
-                    <!-- Primera columna -->
-                    <div class="col-12 col-md-6">
-                        <h4 class="text-center"></h4>
+
+                    <!-- Formulario de Valoración -->
+                    <div class="col-12 col-lg-6">
                         <h4 class="text-center">VALORACIÓN</h4>
                         <form id="valuation-form">
                             {% csrf_token %}
                             <div class="form-container">
                                 <div class="row g-3">
+
+                                    <!-- Primera columna -->
                                     <div class="col-12 col-md-4">
                                         <label for="ciudad" class="form-label">Ciudad:</label>
-                                        <select id="ciudad" class="form-select" onchange="cargarDistritos()"></select>
-                                        <label for="distrito" class="form-label mt-3">Distrito:</label>
-                                        <select id="distrito" class="form-select" onchange="cargarBarrios()"></select>
+                                        <select id="ciudad" class="form-select" aria-label="Seleccionar ciudad"
+                                            onchange="cargarDistritos()"></select>
+
+                                        <label for="distrito" class="form-label">Distrito:</label>
+                                        <select id="distrito" class="form-select" aria-label="Seleccionar distrito"
+                                            onchange="cargarBarrios()"></select>
+
                                         <label for="barrio" class="form-label">Barrio:</label>
-                                        <select id="barrio" class="form-select" onchange="cargarCalle()"><option value="Centro">Centro</option></select>
-                                        
+                                        <select id="barrio" class="form-select"
+                                            aria-label="Seleccionar barrio"></select>
+
                                         <label for="calle" class="form-label">Calle:</label>
-                                        <select id="calle" class="form-select"><option value="Centro">Centro</option></select>
+                                        <select id="calle" class="form-select" aria-label="Seleccionar calle"></select>
 
                                         <label for="tipo-vivienda" class="form-label mt-3">Tipo de vivienda:</label>
-                                        <select id="tipo-vivienda" class="form-select">
+                                        <select id="tipo-vivienda" class="form-select"
+                                            aria-label="Seleccionar tipo de vivienda">
                                             <option value="0">Estudio</option>
                                             <option value="1">Piso</option>
                                             <option value="2">Chalet adosado</option>
@@ -54,21 +64,23 @@
                                         </select>
                                     </div>
 
+                                    <!-- Segunda columna -->
                                     <div class="col-12 col-md-4">
                                         <label for="num-banos" class="form-label">Número de baños:</label>
                                         <input id="num-banos" class="form-control" type="number" min="1" step="1"
-                                            placeholder="">
+                                            placeholder="" aria-label="Número de baños">
 
-                                        <label for="num-habitaciones" class="form-label mt-3">Número de
+                                        <label for="num-habitaciones" class="form-label">Número de
                                             habitaciones:</label>
                                         <input id="num-habitaciones" class="form-control" type="number" min="1" step="1"
-                                            placeholder="">
+                                            placeholder="" aria-label="Número de habitaciones">
 
-                                        <label for="metros-cuadrados" class="form-label mt-3">Metros Cuadrados:</label>
+                                        <label for="metros-cuadrados" class="form-label">Metros Cuadrados:</label>
                                         <input id="metros-cuadrados" class="form-control" type="number" min="1" step="1"
-                                            placeholder="">
+                                            placeholder="" aria-label="Metros cuadrados">
+
                                         <label for="planta" class="form-label">Planta:</label>
-                                        <select id="planta" class="form-select">
+                                        <select id="planta" class="form-select" aria-label="Seleccionar planta">
                                             <option value="-3">Sótano</option>
                                             <option value="-2">Semi-Sótano</option>
                                             <option value="-1">Entreplanta</option>
@@ -82,16 +94,16 @@
                                             <option value="7">7</option>
                                             <option value="8">8</option>
                                         </select>
-                                    </div>
 
-                                    <div class="col-12 col-md-4">
-                                        <label for="tiene-ascensor" class="form-label">Tiene ascensor:</label>
-                                        <select id="tiene-ascensor" class="form-select">
+                                        <label for="tiene-ascensor" class="form-label mt-3">Tiene ascensor:</label>
+                                        <select id="tiene-ascensor" class="form-select"
+                                            aria-label="Seleccionar ascensor">
                                             <option value="0">No</option>
                                             <option value="1">Sí</option>
                                         </select>
-
-                                        <label for="estado-inmueble" class="form-label mt-3">Estado del
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label for="estado-inmueble" class="form-label">Estado del
                                             inmueble:</label>
                                         <select id="estado-inmueble" class="form-select">
                                             <option value="0">Obra nueva</option>
@@ -100,78 +112,77 @@
                                             <option value="3">No declara</option>
                                         </select>
 
-                                        <label for="tiene-terraza" class="form-label mt-3">Tiene terraza:</label>
+                                        <label for="tiene-terraza" class="form-label">Tiene terraza:</label>
                                         <select id="tiene-terraza" class="form-select">
                                             <option value="0">No</option>
                                             <option value="1">Sí</option>
                                         </select>
-                                        <label for="tiene-balcon" class="form-label mt-3">Tiene balcón:</label>
+                                        <label for="tiene-balcon" class="form-label">Tiene balcón:</label>
                                         <select id="tiene-balcon" class="form-select">
                                             <option value="0">No</option>
                                             <option value="1">Sí</option>
                                         </select>
                                     </div>
                                 </div>
-                                <!-- Buttons y tabla -->
-                                <div class="row mt-3">
-                                    <div class="col-12 col-md-8">
-                                        <div class="text-center">
-                                            <button type="button" class="btn btn-primary" id="valorar">VALORAR</button>
-                                            <table class="table mt-3">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Precio mínimo</th>
-                                                        <th>Precio esperado</th>
-                                                        <th>Precio máximo</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td id="precio-minimo">552,723.54</td>
-                                                        <td id="precio-esperado">621,813.99</td>
-                                                        <td id="precio-maximo">690,904.43</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <div class="col-md-12 text-center">
-                                                <button type="button" class="btn btn-primary mb-3" id="tranformar"
-                                                    onclick="transformarAProyecto()">TRANSFORMAR A
-                                                    PROSPECTO DE VENTA
-                                                </button>
-                                            </div>
+
+                                <!-- Botones y tablas -->
+                                <div class="row mt-4">
+                                    <div class="col-12 col-md-6">
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <button type="button" class="btn btn-primary" id="valorar">Valorar</button>
                                         </div>
+                                        <table class="table table-striped mt-4">
+                                            <thead>
+                                                <tr>
+                                                    <th>Precio mínimo</th>
+                                                    <th>Precio esperado</th>
+                                                    <th>Precio máximo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td id="precio-minimo">552,723.54</td>
+                                                    <td id="precio-esperado">621,813.99</td>
+                                                    <td id="precio-maximo">690,904.43</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-primary mb-3" id="tranformar"
+                                            onclick="transformarAProyecto()">TRANSFORMAR A
+                                            PROSPECTO DE VENTA
+                                        </button>
                                     </div>
-                                    <div class="col-12 col-md-4">
-                                        <div class="text-center">
-                                            <button type="button" class="btn btn-primary mb-3"
-                                                id="correccion-manual">CORRECCIÓN MANUAL</button>
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Precio esperado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td id="precio-esperado-unico" contenteditable="true">621,813.99
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                                
-                                            </table>
-                                            <div class="col-md-12 text-center">
-                                                <button type="button" class="btn btn-primary" id="vvalorar">VOLVER A VALORAR</button>
-                                            </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <button type="button" class="btn btn-secondary" id="correccion">Correccion
+                                                Manual</button>
+                                        </div>
+                                        <table class="table table-striped mt-5">
+                                            <thead>
+                                                <tr>
+                                                    <th>Precio esperado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td id="precio-esperado-unico" contenteditable="true">621,813.99
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <button type="button" class="btn btn-primary" id="vvalorar">VOLVER A
+                                                VALORAR</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </form>
-
                     </div>
 
-                    <div class="col-12 col-md-6">
-                        <h4 class="text-center">VISUALIZACIÓN</h4>
+                    <!-- Visualización -->
+                    <div class="col-12 col-lg-6">
+                        <h4 class="text-center">Visualización</h4>
                         <div class="row">
                             <div class="col-6">
                                 <canvas id="pie-chart"></canvas>
@@ -491,7 +502,7 @@
             const textoValidado = textoPegado.replace(/[^0-9.,]/g, '');
             document.execCommand('insertText', false, textoValidado);
         });
-        
+
         document.getElementById('valorar').addEventListener('click', function () {
             const iduser = "{{user_id}}";
             const modo = "valoracion";
@@ -570,69 +581,46 @@
     </script>
 </body>
 <style>
-    .container-fluid {
-        padding: 0;
-    }
-
     .welcome-banner {
-        width: 100%;
-        height: 105px;
         background-color: white;
-        text-align: left;
-        position: relative;
-        margin: 0;
+        text-align: center;
+        padding: 20px 0;
+        margin-bottom: 20px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 1;
     }
-
 
     .welcome-title {
-        margin: 0;
-        font-size: 35px;
+        font-size: 2rem;
         font-weight: bold;
         color: blue;
-        line-height: 100px;
-    }
-
-    @media (max-width: 768px) {
-        .welcome-title {
-            font-size: 1.5rem;
-        }
     }
 
     .form-container {
-        margin: 0 auto;
-        padding: 20px 40px;
-        max-width: 100%;
-        background: #dcdcdc;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
     }
 
     .btn-primary {
-        color: #ba31dd;
-        font-weight: bold;
-        background-color: #ffffff;
-        border: none;
+        background-color: #007bff;
+        color: #fff;
     }
 
-    body {
-        background-color: #dcdcdc;
-
-    }
-
-    h1,
-    h4.text-center,
-    h4.text {
-        color: blue;
-        text-decoration: underline;
-        font-weight: bold;
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
     }
 
     .table {
-        background: #ffffff;
+        background: white;
     }
 </style>
+
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
 
 </html>
 {% endblock %}
