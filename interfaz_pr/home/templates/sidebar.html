@@ -1,5 +1,4 @@
 <div class="container-fluid d-flex">
-    <!-- Botón hamburguesa para móviles -->
     <button class="btn btn-primary d-md-none m-3" id="sidebarToggle">☰ Menú</button>
 
     <!-- Sidebar -->
@@ -16,7 +15,6 @@
         </div>
     </div>
 
-    <!-- Contenido principal -->
     <div class="content flex-grow-1">
         {% block content %}
         {% endblock %}
@@ -24,12 +22,10 @@
 </div>
 
 <style>
-    /* Ajustes generales */
     .container-fluid {
         padding: 0;
     }
 
-    /* Sidebar predeterminado */
     .sidebar {
         background-color: #ccd0ee;
         height: 100vh;
@@ -52,7 +48,6 @@
         background-color: #a6b2c3;
     }
 
-    /* Menú oculto en móviles */
     @media (max-width: 768px) {
         .sidebar {
             position: fixed;
@@ -69,7 +64,6 @@
         }
     }
 
-    /* Botón hamburguesa */
     #sidebarToggle {
         position: absolute;
         left: 10px;
