@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-lk*c(cf5azgn#10c87*&o-&lt56jf_0&m!bvgg(*2bwu$s3poj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app','127.0.0.1']
 
 
 # Application definition
@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'interfaz_pr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'predictbuildadmin',
+        'NAME': 'predictor-precios',
+        'USER': 'predictbuild-user1',
         'PASSWORD': 'ayrt0nsenn@',
-        'HOST': 'predictbuild.postgres.database.azure.com',  
+        'HOST': '34.175.4.103',  
         'PORT': '5432',       
         'OPTIONS': {
             'options': '-c search_path=data,public'

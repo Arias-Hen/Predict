@@ -1,79 +1,162 @@
-<div class="container-fluid d-flex">
-    <button class="btn btn-primary d-md-none m-3" id="sidebarToggle">☰ Menú</button>
-
+<div class="container-fluid vh-100 d-flex p-0">
+    <!-- Botón Toggle Mobile -->
+    <button class="btn btn-primary position-fixed start-0 mt-3 ms-3 z-3" id="sidebarToggle" type="button"
+        style="z-index: 1032;" aria-label="Toggle navigation" data-bs-toggle="collapse"
+        data-bs-target="#sidebarCollapse">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list"
+            viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+        </svg>
+    </button>
     <!-- Sidebar -->
-    <div class="sidebar custom-sidebar d-flex flex-column align-items-center" id="sidebar">
-        <div class="bg-primary text-white p-3 w-100 text-center">
-            <h5>{{ user_nombre }}</h5>
-            <p>hola@unsitiogenial.es</p>
+    <div class="sidebar collapse d-lg-block col-lg-2 bg-primary" id="sidebarCollapse">
+        <!-- Encabezado -->
+        <div class="sidebar-header bg-primary-dark p-3 text-center">
+            <h5 class="text-white mb-1">{{ user_nombre }}</h5>
+            <small class="text-white-50">hola@unsitiogenial.es</small>
         </div>
-        <div class="text-white p-3 mt-5">
-            <a href="\home\valoraciones" id="mis-valoraciones" class="sidebar-link">MIS VALORACIONES</a>
-            <a href="\home\ventas" id="mis-ventas" class="sidebar-link">MIS VENTAS</a>
-            <a href="\home\informes" id="mis-informes" class="sidebar-link">MIS INFORMES</a>
-            <a href="#" id="generar-informe" class="sidebar-link">GENERAR INFORME</a>
-        </div>
+        <!-- Menú -->
+        <nav class="sidebar-menu p-3 text-white-50" aria-label="Main navigation">
+            <div class="d-flex flex-column gap-3 text-white-50">
+                <a href="\home\valoraciones" class="sidebar-link btn-hover">
+                    <span class="ms-2">MIS VALORACIONES</span>
+                </a>
+                <a href="\home\ventas" class="sidebar-link btn-hover">
+                    <span class="ms-2">MIS VENTAS</span>
+                </a>
+                <a href="\home\informes" class="sidebar-link btn-hover">
+                    <span class="ms-2">MIS INFORMES</span>
+                </a>
+                <a href="#" class="sidebar-link btn-hover">
+                    <span class="ms-2">GENERAR INFORME</span>
+                </a>
+            </div>
+        </nav>
     </div>
-
-    <div class="content flex-grow-1">
+    <!-- Contenido Principal -->
+    <main class="content flex-grow-1 p-3 p-lg-4">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 </div>
+<script>
+    document.getElementById("sidebarToggle").addEventListener("click", function () {
+        const sidebar = document.getElementById("sidebarCollapse");
 
+        sidebar.classList.toggle("show");
+
+        let overlay = document.querySelector(".sidebar-overlay");
+        if (!overlay && sidebar.classList.contains("show")) {
+            overlay = document.createElement("div");
+            overlay.className = "sidebar-overlay";
+            overlay.onclick = () => {
+                sidebar.classList.remove("show");
+                overlay.remove();
+            };
+            document.body.appendChild(overlay);
+        } else if (overlay) {
+            overlay.remove();
+        }
+    });
+
+
+    document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("sidebarCollapse");
+        const toggleButton = document.getElementById("sidebarToggle");
+
+        if (!sidebar.contains(event.target) && !toggleButton.contains(event.target)) {
+            sidebar.classList.remove("show");
+            document.querySelector(".sidebar-overlay")?.remove();
+        }
+    });
+</script>
 <style>
-    .container-fluid {
-        padding: 0;
+    :root {
+        --sidebar-bg: #ccd0ee;
+        --sidebar-width: 250px;
+        --transition-speed: 0.3s;
     }
 
     .sidebar {
-        background-color: #ccd0ee;
+        background: var(--sidebar-bg);
+        width: var(--sidebar-width);
         height: 100vh;
-        padding: 0;
-        width: 250px;
-        transition: transform 0.3s ease-in-out;
+        position: fixed;
+        left: 0;
+        top: 0;
+        overflow-y: auto;
+        transition: left 0.3s ease-in-out;
     }
 
-    .sidebar a {
-        color: rgb(0, 0, 0);
+    .sidebar-header {
+        background: rgba(0, 0, 0, 0.15);
+        padding-block: 1.5rem !important;
+    }
+
+    .sidebar-link {
+        color: #fff7f7;
         text-decoration: none;
-        display: block;
-        margin-bottom: 20px;
-        font-weight: bold;
-        font-size: 1.25rem;
-        padding-left: 15px;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
     }
 
-    .sidebar a:hover {
-        background-color: #a6b2c3;
-    }
-
-    @media (max-width: 768px) {
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100vh;
-            background-color: #ccd0ee;
-            z-index: 1000;
-        }
-
-        .sidebar.show {
-            left: 0;
-        }
+    .btn-hover:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: translateX(5px);
     }
 
     #sidebarToggle {
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        z-index: 1100;
+        display: none;
+        z-index: 1031 !important;
+        top: 20px !important;
+        left: 15px !important;
+        background: rgb(0, 0, 0) !important;
+        border: 2px solid #ba31dd !important;
+    }
+
+
+    @media (max-width: 1399.98px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            z-index: 1030;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
+        #sidebarToggle {
+            display: block;
+            z-index: 1031 !important;
+            top: 20px !important;
+            left: 15px !important;
+            background: rgb(0, 0, 0) !important;
+            border: 2px solid #ba31dd !important;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1029;
+        }
     }
 </style>
-
-<script>
-    document.getElementById("sidebarToggle").addEventListener("click", function () {
-        document.getElementById("sidebar").classList.toggle("show");
-    });
-</script>

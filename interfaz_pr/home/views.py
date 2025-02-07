@@ -93,7 +93,7 @@ def ventas(request):
                 'precio_esperado': data.get('precio_esperado', ''),
                 'precio_maximo': data.get('precio_maximo', ''),
                 'precio_esperado_unico': data.get('precio_esperado_unico', ''),
-                
+    
             }
             
             request.session['context_json'] = json.dumps(context)
