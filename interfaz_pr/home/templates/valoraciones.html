@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
         <h1 class="text-primary text-center fw-bold text-decoration-underline mb-0">BIENVENIDO A PROJECTBUILD</h1>
     </div>
 </head>
+
 <body class="bg">
     <div class="container-fluid">
         <div class="row g-3 justify-content-center">
@@ -168,36 +170,22 @@
                             </div>
                         </form>
                     </div>
-                    <!-- Visualización -->
-                    <div class="col-12 col-lg-5">
-                        <h4 class="col-12 col-lg-6">Visualización</h4>
-                        <div class="row g-3">
-                            <!-- Cada gráfico en contenedor controlado -->
-                            <div class="col-12 col-sm-6 mb-4">
-                                <div class="chart-box bg-white p-2 rounded shadow-sm">
-                                    <canvas id="pie-chart" height="200"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-4">
-                                <div class="chart-box bg-white p-2 rounded shadow-sm">
-                                    <canvas id="bar-chart" height="200"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-4">
-                                <div class="chart-box bg-white p-2 rounded shadow-sm">
-                                    <canvas id="line-chart" height="200"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-4">
-                                <div class="chart-box bg-white p-2 rounded shadow-sm">
-                                    <canvas id="stacked-bar-chart" height="200"></canvas>
-                                </div>
+                </div>
+                <!-- Visualización -->
+                <div class="col-12 col-lg-5">
+                    <h4 class="col-12 col-lg-12">Visualización</h4>
+                    <div class="row g-3">
+                        <!-- Cada gráfico en contenedor controlado -->
+                        <div class="col-12 col-sm-12 mb-4">
+                            <div class="chart-box bg-white p-2 rounded shadow-sm">
+                                <canvas id="radar-chart" height="200"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -326,73 +314,6 @@
             })
             .catch(error => console.error('Error al cargar los barrios:', error));
     }
-
-    const pieCtx = document.getElementById('pie-chart').getContext('2d');
-    const barCtx = document.getElementById('bar-chart').getContext('2d');
-    const lineCtx = document.getElementById('line-chart').getContext('2d');
-    const stackedBarCtx = document.getElementById('stacked-bar-chart').getContext('2d');
-
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Elementos 1', 'Elementos 2', 'Elementos 3', 'Elementos 4', 'Elementos 5'],
-            datasets: [{
-                data: [20, 20, 20, 20, 20],
-                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#5dc2bd']
-            }]
-        }
-    });
-
-    new Chart(barCtx, {
-        type: 'bar',
-        data: {
-            labels: ['1', '2', '3', '4', '5', '6', '7'],
-            datasets: [{
-                data: [8, 12, 9, 10, 6, 8, 14],
-                backgroundColor: '#36a2eb'
-            }]
-        }
-    });
-
-    new Chart(lineCtx, {
-        type: 'line',
-        data: {
-            labels: ['1', '2', '3', '4', '5'],
-            datasets: [{
-                data: [10, 15, 20, 25, 30],
-                borderColor: '#cc65fe',
-                fill: false
-            }]
-        }
-    });
-
-    new Chart(stackedBarCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Elementos 1', 'Elementos 2', 'Elementos 3', 'Elementos 4'],
-            datasets: [{
-                label: 'Serie 1',
-                data: [10, 20, 30, 40],
-                backgroundColor: '#36a2eb'
-            }, {
-                label: 'Serie 2',
-                data: [15, 25, 35, 45],
-                backgroundColor: '#ff6384'
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    stacked: true
-                },
-                y: {
-                    stacked: true
-                }
-            }
-        }
-    });
-
-
     function transformarAProyecto() {
         const iduser = "{{user_id}}";
         const modo = "prospecto";
@@ -585,6 +506,70 @@
                 console.error('Error completo:', error);
             });
     });
+    document.getElementById('valorar').addEventListener('click', function () {
+        const viviendaPromedio = [80, 3, 2, 250000];  // Ejemplo de datos promedio
+        const viviendaUsuario = [
+            parseInt(document.getElementById('metros-cuadrados').value) || 0,
+            parseInt(document.getElementById('num-habitaciones').value) || 0,
+            parseInt(document.getElementById('num-banos').value) || 0,
+            270000 // Ejemplo de precio predicho
+        ];
+
+        function escalarDatos(data, maxValues) {
+            return data.map((valor, index) => (valor / maxValues[index]) * 100);
+        }
+
+        const maxValues = [200, 5, 4, 500000];  // Máximos para normalización
+        const viviendaPromedioEscalada = escalarDatos(viviendaPromedio, maxValues);
+        const viviendaUsuarioEscalada = escalarDatos(viviendaUsuario, maxValues);
+
+        // Actualiza los datos del gráfico existente
+        window.radarChart.data.datasets[0].data = viviendaPromedioEscalada;
+        window.radarChart.data.datasets[1].data = viviendaUsuarioEscalada;
+        window.radarChart.update();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('radar-chart').getContext('2d');
+
+        // Inicializamos el gráfico vacío o con datos nulos
+        window.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['m²', 'Habitaciones', 'Baños', 'Precio Medio'],
+                datasets: [
+                    {
+                        label: 'Vivienda Promedio',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+                    },
+                    {
+                        label: 'Vivienda Ingresada',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    });
 </script>
 <style>
     .hidden-column {
@@ -650,6 +635,31 @@
     .table-bordered th,
     .table-bordered td {
         border: 2px solid #000000;
+    }
+
+    .chart-box {
+        width: 100%;
+        max-width: 400px;
+        /* Limita el ancho máximo para que no se estire demasiado */
+        aspect-ratio: 1 / 1;
+        /* Mantiene el contenedor cuadrado */
+        position: relative;
+        margin: auto;
+        /* Centra el gráfico horizontalmente */
+        background-color: #fff;
+        /* Asegura que el fondo sea blanco */
+        border-radius: 15px;
+        /* Esquinas redondeadas para un mejor aspecto */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Sombra suave */
+    }
+
+    .chart-box canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
     }
 </style>
 
