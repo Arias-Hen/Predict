@@ -506,70 +506,6 @@
                 console.error('Error completo:', error);
             });
     });
-    document.getElementById('valorar').addEventListener('click', function () {
-        const viviendaPromedio = [80, 3, 2, 250000];  // Ejemplo de datos promedio
-        const viviendaUsuario = [
-            parseInt(document.getElementById('metros-cuadrados').value) || 0,
-            parseInt(document.getElementById('num-habitaciones').value) || 0,
-            parseInt(document.getElementById('num-banos').value) || 0,
-            270000 // Ejemplo de precio predicho
-        ];
-
-        function escalarDatos(data, maxValues) {
-            return data.map((valor, index) => (valor / maxValues[index]) * 100);
-        }
-
-        const maxValues = [200, 5, 4, 500000];  // Máximos para normalización
-        const viviendaPromedioEscalada = escalarDatos(viviendaPromedio, maxValues);
-        const viviendaUsuarioEscalada = escalarDatos(viviendaUsuario, maxValues);
-
-        // Actualiza los datos del gráfico existente
-        window.radarChart.data.datasets[0].data = viviendaPromedioEscalada;
-        window.radarChart.data.datasets[1].data = viviendaUsuarioEscalada;
-        window.radarChart.update();
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('radar-chart').getContext('2d');
-
-        // Inicializamos el gráfico vacío o con datos nulos
-        window.radarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['m²', 'Habitaciones', 'Baños', 'Precio Medio'],
-                datasets: [
-                    {
-                        label: 'Vivienda Promedio',
-                        data: [0, 0, 0, 0],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-                    },
-                    {
-                        label: 'Vivienda Ingresada',
-                        data: [0, 0, 0, 0],
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        pointBackgroundColor: 'rgba(75, 192, 192, 1)'
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    r: {
-                        suggestedMin: 0,
-                        suggestedMax: 100
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                }
-            }
-        });
-    });
 </script>
 <style>
     .hidden-column {
@@ -640,18 +576,12 @@
     .chart-box {
         width: 100%;
         max-width: 400px;
-        /* Limita el ancho máximo para que no se estire demasiado */
         aspect-ratio: 1 / 1;
-        /* Mantiene el contenedor cuadrado */
         position: relative;
         margin: auto;
-        /* Centra el gráfico horizontalmente */
         background-color: #fff;
-        /* Asegura que el fondo sea blanco */
         border-radius: 15px;
-        /* Esquinas redondeadas para un mejor aspecto */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        /* Sombra suave */
     }
 
     .chart-box canvas {
