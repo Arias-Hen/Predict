@@ -36,6 +36,9 @@ def cfunciona(request):
 def casos(request):
     return render(request, 'casos.html')
 
+def terminos(request):
+    return render(request, 'terminos.html')
+
 @login_required
 def valoraciones(request):
     options = []
