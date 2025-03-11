@@ -23,7 +23,7 @@
             <div class="col-12 col-xl-10">
                 <div class="row mt-5">
                     <!-- Formulario de Valoración -->
-                    <div class="col-12 col-lg-7 form-container">
+                    <div class="col-12 col-lg-7 form-container ms-2">
                         <h4
                             class="text-center text-center text-primary text-center fw-bold text-decoration-underline mb-0">
                             VALORACIÓN</h4>
@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <!-- Visualización -->
-                <div class="col-12 col-lg-5">
+                <div class="col-12 col-lg-4">
                     <h4 class="col-12 col-lg-12">Visualización</h4>
                     <div class="row g-3">
                         <!-- Cada gráfico en contenedor controlado -->
@@ -431,7 +431,7 @@
         document.execCommand('insertText', false, textoValidado);
     });
 
-    document.getElementById('valorar').addEventListener('click', function () {
+    document.getElementById('valorar').addEventListener('click', async function () {
         const iduser = "{{user_id}}";
         const modo = "valoracion";
         const ciudad = document.getElementById('ciudad').value;
@@ -464,49 +464,160 @@
             ascensor,
             estado
         };
-        console.log("JSON enviado:", data);
-        fetch('/home/guardar_valoracion/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-        fetch('https://apiprediccion.onrender.com/api/prediccion/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(responseData => {
-                console.log('Datos recibidos de la API:', responseData);
 
-                document.getElementById('precio-minimo').textContent = responseData.precio_minimo.toFixed(2);
-                document.getElementById('precio-esperado').textContent = responseData.precio_esperado.toFixed(2);
-                document.getElementById('precio-maximo').textContent = responseData.precio_maximo.toFixed(2);
-            })
-            .then(data => {
-                console.log('Datos recibidos de la API:', data);
-            })
-            .catch(error => {
-                console.error('Error completo:', error);
+        try {
+            const prediccionResponse = await fetch('https://app2-dot-predictbuild.uc.r.appspot.com/api/prediccion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
             });
+
+            if (!prediccionResponse.ok) {
+                throw new Error(`Error al obtener predicción. Status: ${prediccionResponse.status}`);
+            }
+            const precio_esperado_unico = document.getElementById('precio-esperado-unico')
+                ? parseFloat(
+                    document.getElementById('precio-esperado-unico').textContent.replace(/[^0-9.-]+/g, "")
+                ) || 0  // Si es NaN o vacío, usa 0
+                : 0;  // Si el elemento no existe, también usa 0            console.log("PRECIO", precio_esperado_unico)
+
+            const responseData = await prediccionResponse.json();
+            console.log('Datos recibidos de la API:', responseData);
+
+            document.getElementById('precio-minimo').textContent = responseData.precio_minimo.toFixed(2);
+            document.getElementById('precio-esperado').textContent = responseData.precio_esperado.toFixed(2);
+            document.getElementById('precio-maximo').textContent = responseData.precio_maximo.toFixed(2);
+
+            const radarResponse = await fetch('/home/get_radar_data/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    ciudad: data.ciudad,
+                    distrito: data.distrito,
+                    barrio: data.barrio,
+                    tipo_vivienda: data.tipo_vivienda,
+                    m2: data.m2,
+                    num_habitaciones: data.num_habitaciones,
+                    num_banos: data.num_banos,
+                    precio_esperado: responseData.precio_esperado,
+                    terraza: data.terraza,
+                    balcon: data.balcon,
+                    ascensor: data.ascensor
+                })
+            });
+            const radarData = await radarResponse.json();
+            renderRadarChart(radarData, data.barrio);
+            data.precio_minimo = responseData.precio_minimo;
+            data.precio_esperado = responseData.precio_esperado;
+            data.precio_maximo = responseData.precio_maximo;
+
+
+            data.precio_esperado_unico = precio_esperado_unico;
+
+            const guardarResponse = await fetch('/home/guardar_valoracion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!guardarResponse.ok) {
+                throw new Error(`Error al guardar la valoración. Status: ${guardarResponse.status}`);
+            }
+
+            console.log('Valoración guardada correctamente.');
+        } catch (error) {
+            console.error('Error completo:', error);
+        }
     });
-</script>itg
+
+    function renderRadarChart(radarData, barrio) {
+        if (window.radarChart) window.radarChart.destroy();
+
+        const ctx = document.getElementById('radar-chart').getContext('2d');
+
+        // Configuración idéntica a Streamlit
+        window.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['m²', 'Habitaciones', 'Baños', 'Precio'],
+                datasets: [
+                    {
+                        label: 'Otras viviendas del barrio',
+                        data: [
+                            radarData.valores_medios.m2,
+                            radarData.valores_medios.habitaciones,
+                            radarData.valores_medios.banos,
+                            radarData.valores_medios.precio
+                        ],
+                        backgroundColor: 'rgba(0, 128, 255, 0.2)',
+                        borderColor: 'rgba(0, 128, 255, 0.7)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(0, 128, 255, 1)'
+                    },
+                    {
+                        label: 'Vivienda elegida',
+                        data: [
+                            radarData.valores_usuario.m2,
+                            radarData.valores_usuario.habitaciones,
+                            radarData.valores_usuario.banos,
+                            radarData.valores_usuario.precio
+                        ],
+                        backgroundColor: 'rgba(0, 255, 128, 0.2)',
+                        borderColor: 'rgba(0, 255, 128, 0.7)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(0, 255, 128, 1)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: 'black',
+                            callback: (value) => `${value}%`
+                        },
+                        grid: { color: 'black' },
+                        angleLines: { color: 'black' }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `COMPARACIÓN DE VIVIENDAS EN EL MISMO BARRIO`,
+                        font: { size: 18 },
+                        color: 'black'
+                    },
+                    legend: {
+                        labels: { color: 'black' }
+                    },
+                    subtitle: {
+                        display: true,
+                        text: [
+                            `En el barrio ${barrio}:`,
+                            `- ${radarData.texto_adicional.porcentajes_barrio.terraza} tienen terraza`,
+                            `- ${radarData.texto_adicional.porcentajes_barrio.balcon} tienen balcón`,
+                            `- ${radarData.texto_adicional.porcentajes_barrio.ascensor} tienen ascensor`
+                        ],
+                        position: 'bottom',
+                        font: { size: 14, color: 'black' },
+                        padding: { top: 20 }
+                    }
+                }
+            }
+        });
+    }
+</script>
 <style>
     .hidden-column {
         display: none;
@@ -536,6 +647,7 @@
 
         .content {
             margin-left: 0;
+            margin-right: 20;
             margin-top: 120px;
         }
 

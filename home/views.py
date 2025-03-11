@@ -23,6 +23,7 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from .models import Valoracion
 from urllib.parse import unquote
+from .models import PredictionModel
 
 def home(request):
     return render(request, 'home.html')
@@ -146,6 +147,10 @@ def ventas(request):
                 'ascensor': val.ascensor,
                 'estado': val.estado_inmueble,
                 'fecha_guardado': val.fecha_guardado.strftime('%d/%m/%Y'),
+                'precio_minimo': val.precio_minimo,
+                'precio_esperado': val.precio_esperado,
+                'precio_maximo': val.precio_maximo,
+                'precio_esperado_unico': val.precio_esperado_unico,
             })
     except FileNotFoundError:
         print("Archivo de valoraciones no encontrado.")
@@ -290,6 +295,10 @@ def guardar_valoracion(request):
                 balcon=bool(data.get("balcon")),   
                 ascensor=bool(data.get("ascensor")), 
                 estado_inmueble=data.get("estado"),
+                precio_minimo=data.get("precio_minimo"),
+                precio_esperado=data.get("precio_esperado"),
+                precio_maximo=data.get("precio_maximo"),
+                precio_esperado_unico=data.get("precio_esperado_unico")
             )
 
             return JsonResponse({
@@ -424,3 +433,37 @@ def contacto(request):
             return JsonResponse({"message": f"Hubo un error al enviar el correo: {e}"}, status=500)
 
     return render(request, 'contacto.html')
+
+def get_radar_data(request):
+    try:
+        data = json.loads(request.body)
+        
+        # Validar campos
+        required_fields = ['ciudad', 'distrito', 'barrio', 'tipo_vivienda', 
+                          'm2', 'num_habitaciones', 'num_banos', 'precio_esperado',
+                          'terraza', 'balcon', 'ascensor']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({"error": f"Campo faltante: {field}"}, status=400)
+        
+        # Obtener datos
+        radar_data = PredictionModel.get_radar_data(
+            ciudad=data['ciudad'],
+            distrito=data['distrito'],
+            barrio=data['barrio'],
+            tipo_vivienda=int(data['tipo_vivienda']),
+            user_data={
+                "m2": data['m2'],
+                "num_habitaciones": data['num_habitaciones'],
+                "num_banos": data['num_banos'],
+                "precio_medio": data['precio_esperado'],
+                "terraza": data['terraza'],
+                "balcon": data['balcon'],
+                "ascensor": data['ascensor']
+            }
+        )
+        
+        return JsonResponse(radar_data)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

@@ -16,13 +16,14 @@
         <h1 class="text-primary text-center fw-bold text-decoration-underline mb-0">BIENVENIDO A PROJECTBUILD</h1>
     </div>
 </head>
+
 <body class="bg">
     <div class="container-fluid">
         <div class="row g-3 justify-content-center">
             <div class="col-12 col-xl-10">
                 <div class="row mt-5" id="main-content">
                     <!-- Formulario de Valoración -->
-                    <div class="col-12 col-lg-8 form-container">
+                    <div class="col-12 col-lg-7 form-container ms-3">
                         <h4
                             class="text-center text-center text-primary text-center fw-bold text-decoration-underline mb-0">
                             CONVERTIR LA VALORACION A VENTA</h4>
@@ -452,6 +453,11 @@
                         <td class="hidden-column">{{ valoracion.terraza }}</td>
                         <td class="hidden-column">{{ valoracion.balcon }}</td>
                         <td class="hidden-column">{{ valoracion.ascensor }}</td>
+                        <td class="hidden-column">{{ valoracion.precio_minimo }}</td>
+                        <td class="hidden-column">{{ valoracion.precio_esperado }}</td>
+                        <td class="hidden-column">{{ valoracion.precio_maximo }}</td>
+                        <td class="hidden-column">{{ valoracion.precio_esperado_unico }}</td>
+                        
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -535,6 +541,10 @@
                         terraza: row.querySelector('td:nth-child(15)').textContent.trim(),
                         balcon: row.querySelector('td:nth-child(16)').textContent.trim(),
                         ascensor: row.querySelector('td:nth-child(17)').textContent.trim(),
+                        precio_minimo: row.querySelector('td:nth-child(18)').textContent.trim(),
+                        precio_esperado: row.querySelector('td:nth-child(19)').textContent.trim(),
+                        precio_maximo: row.querySelector('td:nth-child(20)').textContent.trim(),
+                        precio_esperado_unico: row.querySelector('td:nth-child(21)').textContent.trim(),
                     };
                     selectedRows.push(rowData);
                     console.log("DATOS DEL EXCEL", rowData)
@@ -589,6 +599,10 @@
                         terraza: row.querySelector('td:nth-child(15)').textContent.trim(),
                         balcon: row.querySelector('td:nth-child(16)').textContent.trim(),
                         ascensor: row.querySelector('td:nth-child(17)').textContent.trim(),
+                        precio_minimo: row.querySelector('td:nth-child(18)').textContent.trim(),
+                        precio_esperado: row.querySelector('td:nth-child(19)').textContent.trim(),
+                        precio_maximo: row.querySelector('td:nth-child(20)').textContent.trim(),
+                        precio_esperado_unico: row.querySelector('td:nth-child(21)').textContent.trim(),
                     };
                     selectedRows.push(rowData);
                     console.log("DATOS SELECCIONADOS ", selectedRows)
@@ -602,63 +616,65 @@
             const selectedRecord = selectedRows[0];
             const mainContent = document.getElementById('main-content');
             mainContent.innerHTML = `
-            <h3>Detalles de la Valoración</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <h4 class="text-center">DATOS DE LA VIVIENDA</h4>
+            <div class="container-fluid">
+    <div class="row g-3 justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="row mt-5" id="main-content">
+                <div class="col-12 col-lg-7 form-container ms-3">
+                    <h4 class="text-center text-primary fw-bold text-decoration-underline mb-0">
+                        CONVERTIR LA VALORACION A VENTA</h4>
                     <form id="valuation-form">
-                        <div class="form-container">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-start">
                             <div class="row g-3">
-                                <!-- Primera columna -->
-                                <div class="col-md-4">
+                                <div class="col-12 col-lg-4 col-md-6">
                                     <label for="ciudad" class="form-label">Ciudad:</label>
                                     <input type="text" id="ciudad" class="form-control" value="${selectedRecord.ciudad}" readonly>
-
-                                    <label for="distrito" class="form-label mt-3">Distrito:</label>
+                                    
+                                    <label for="distrito" class="form-label">Distrito:</label>
                                     <input type="text" id="distrito" class="form-control" value="${selectedRecord.distrito}" readonly>
-
-                                    <label for="tipo-vivienda" class="form-label mt-3">Tipo de vivienda:</label>
-                                    <input type="text" id="tipo-vivienda" class="form-control" value="${selectedRecord.tipo_vivienda}" readonly>
-
+                                    
                                     <label for="barrio" class="form-label">Barrio:</label>
                                     <input type="text" id="barrio" class="form-control" value="${selectedRecord.barrio}" readonly>
-
+                                    
                                     <label for="calle" class="form-label">Calle:</label>
                                     <input type="text" id="calle" class="form-control" value="${selectedRecord.calle}" readonly>
+                                    
+                                    <label for="tipo-vivienda" class="form-label mt-3">Tipo de vivienda:</label>
+                                    <input type="text" id="tipo-vivienda" class="form-control" value="${selectedRecord.tipo_vivienda}" readonly>
                                 </div>
-                                <!-- Segunda columna -->
-                                <div class="col-md-4">
+                                
+                                <div class="col-12 col-lg-4 col-md-6">
                                     <label for="num-banos" class="form-label">Número de baños:</label>
                                     <input type="number" id="num-banos" class="form-control" value="${selectedRecord.num_banos}" readonly>
-
-                                    <label for="num-habitaciones" class="form-label mt-3">Número de habitaciones:</label>
+                                    
+                                    <label for="num-habitaciones" class="form-label">Número de habitaciones:</label>
                                     <input type="number" id="num-habitaciones" class="form-control" value="${selectedRecord.num_habitaciones}" readonly>
-
-                                    <label for="metros-cuadrados" class="form-label mt-3">Metros Cuadrados:</label>
+                                    
+                                    <label for="metros-cuadrados" class="form-label">Metros Cuadrados:</label>
                                     <input type="number" id="metros-cuadrados" class="form-control" value="${selectedRecord.metros_cuadrados}" readonly>
-
+                                    
                                     <label for="planta" class="form-label">Planta:</label>
                                     <input type="text" id="planta" class="form-control" value="${selectedRecord.planta}" readonly>
-                                </div>
-                                <!-- Tercera columna -->
-                                <div class="col-md-4">
-                                    <label for="tiene-ascensor" class="form-label">Tiene ascensor:</label>
+                                    
+                                    <label for="tiene-ascensor" class="form-label mt-3">Tiene ascensor:</label>
                                     <input type="text" id="tiene-ascensor" class="form-control" value="${selectedRecord.ascensor}" readonly>
-
-                                    <label for="estado-inmueble" class="form-label mt-3">Estado del inmueble:</label>
+                                </div>
+                                <div class="col-12 col-lg-4 col-md-6">
+                                    <label for="estado-inmueble" class="form-label">Estado del inmueble:</label>
                                     <input type="text" id="estado-inmueble" class="form-control" value="${selectedRecord.estado_inmueble}" readonly>
-
-                                    <label for="tiene-terraza" class="form-label mt-3">Tiene terraza:</label>
+                                    
+                                    <label for="tiene-terraza" class="form-label">Tiene terraza:</label>
                                     <input type="text" id="tiene-terraza" class="form-control" value="${selectedRecord.terraza}" readonly>
-
-                                    <label for="tiene-balcon" class="form-label mt-3">Tiene balcón:</label>
+                                    
+                                    <label for="tiene-balcon" class="form-label">Tiene balcón:</label>
                                     <input type="text" id="tiene-balcon" class="form-control" value="${selectedRecord.balcon}" readonly>
                                 </div>
                             </div>
                             <div class="row mt-3">
-                                <div class="col-md-8">
+                                <div class="col-md-6">
                                     <div class="text-center">
-                                        <table class="table tb mt-3">
+                                        <table class="table table-bordered border-dark mb-0 bg-light">
                                             <thead>
                                                 <tr>
                                                     <th>Precio mínimo</th>
@@ -668,17 +684,17 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>${selectedRecord.precio}</td>
-                                                    <td>${selectedRecord.precio}</td>
-                                                    <td>${selectedRecord.precio}</td>
+                                                    <td>${selectedRecord.precio_minimo}</td>
+                                                    <td>${selectedRecord.precio_esperado}</td>
+                                                    <td>${selectedRecord.precio_maximo}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mt-3">
+                                <div class="col-md-6">
                                     <div class="text-center">
-                                        <table class="table tb1">
+                                        <table class="table table-bordered border-dark mb-0 bg-light">
                                             <thead>
                                                 <tr>
                                                     <th>Precio esperado</th>
@@ -686,7 +702,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td id="precio-esperado-unico" contenteditable="true">${selectedRecord.precio}</td>
+                                                    <td id="precio-esperado-unico" contenteditable="true">${selectedRecord.precio_esperado_unico}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -696,29 +712,39 @@
                             <div class="row mt-4">
                                 <div class="col-md-5">
                                     <h4 class="text-end">Datos Adicionales</h4>
-                                    <input type="text" class="form-control small-textbox" placeholder="" readonly />
+                                    <input type="text" class="form-control small-textbox" placeholder="Datos" readonly />
                                 </div>
                                 <div class="col-mt-50">
                                     <div class="text-center mt-4">
-                                        <button type="button" class="btn btn-primary" id="correccion-manual"
-                                            onclick="window.location.href='/home/generarinf'">GENERAR
-                                            INFORME</button>
+                                        <button type="button" class="btn btn-outline-primary fw-bold w-100 py-2"
+                                            id="correccion-manual"
+                                            onclick="window.location.href='/home/generarinf'">GENERAR INFORME</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="col-md-6 filtros-container">
-                    <h4 class="text-center">FILTROS</h4>
-                    <button class="filter-button">
-                        FILTRAR POR
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24">
-                            <path d="M3 4h18l-7 10v5l-4 3v-8l-7-10z" />
-                        </svg>
-                    </button>
+<div class="col-12 col-lg-4">
+                    <div class="col-md-6 filtros-container">
+                        <h4
+                            class="text-center text-center text-primary text-center fw-bold text-decoration-underline mb-0">
+                            FILTROS</h4>
+                        <button
+                            class=" filter-button btn btn-light shadow-sm d-flex align-items-center gap-2 mx-auto px-4 py-2 mt-3">
+                            FILTRAR POR
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24">
+                                <path d="M3 4h18l-7 10v5l-4 3v-8l-7-10z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
             </div>
+        </div>
+    </div>
+</div>
+
         `;
             document.body.addEventListener('click', function (event) {
                 if (event.target && event.target.matches('.filter-button')) {
@@ -819,5 +845,6 @@
         border: 2px solid #000000;
     }
 </style>
+
 </html>
 {% endblock %}

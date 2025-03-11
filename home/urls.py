@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 app_name = 'home'
 
 urlpatterns = [
@@ -21,4 +22,6 @@ urlpatterns = [
     path('register/', views.user_register, name='register'),
     path('exportar_excel/', views.exportar_excel, name='exportar_excel'),
     path('terminos/', views.terminos, name='terminos'),
+    path('get_radar_data/', views.get_radar_data, name='get_radar_data'),
+
 ]

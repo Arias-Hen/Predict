@@ -9,24 +9,39 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+import environ
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+env = environ.Env(DEBUG=(bool, False))
+env_file = os.path.join(BASE_DIR, '.env')
+env.read_env(env_file)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lk*c(cf5azgn#10c87*&o-&lt56jf_0&m!bvgg(*2bwu$s3poj'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['.vercel.app','127.0.0.1']
+APPENGINE_URL = env('APPENGINE_URL', default=None)
+if APPENGINE_URL:
+    # ensure a scheme is present in the URL before it's processed.
+    if not urlparse(APPENGINE_URL).scheme:
+        APPENGINE_URL = f'https://{APPENGINE_URL}'
 
+    ALLOWED_HOSTS = [urlparse(APPENGINE_URL).netloc]
+    CSRF_TRUSTED_ORIGINS = [APPENGINE_URL]
+    SECURE_SSL_REDIRECT = True
+else:
+    ALLOWED_HOSTS = ['*']
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -80,19 +95,19 @@ WSGI_APPLICATION = 'interfaz_pr.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'predictor-precios',
-#        'USER': 'predictbuild-user1',
-#        'PASSWORD': 'ayrt0nsenn@',
-#        'HOST': '34.175.4.103',  
-#        'PORT': '5432',       
-#        'OPTIONS': {
-#            'options': '-c search_path=data,public'
-#        },
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'predictor-precios',
+        'USER': 'predictbuild-user1',
+        'PASSWORD': 'ayrt0nsenn@',
+        'HOST': '/cloudsql/predictbuild:europe-southwest1:predictbuild-instancia',  
+        'PORT': '5432',       
+        'OPTIONS': {
+            'options': '-c search_path=data,public'
+        },
+    }
+}
 
 
 # Password validation
@@ -129,7 +144,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -157,9 +171,12 @@ LOGGING = {
         },
     },
 }
-LOGIN_URL = '   home/login/'
+LOGIN_URL = 'home/login/'
 LOGIN_REDIRECT_URL = 'home:valoraciones'
-
+STATIC_URL = 'https://storage.googleapis.com/igniteaibucket01/proyecto2-static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'proyecto2-static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 AUTHENTICATION_BACKENDS = [
     'home.backends.CustomUserBackend',  # Tu backend personalizado
     'django.contrib.auth.backends.ModelBackend',  # Backend predeterminado de Django
