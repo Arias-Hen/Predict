@@ -425,7 +425,7 @@ def contacto(request):
                 asunto,
                 mensaje,
                 correo_electronico, 
-                ['jhonhendrick.ins@gmail.com'], 
+                ['Contactoigniteconsultor@gmail.com'], 
                 fail_silently=False,
             )
             return JsonResponse({"message": "Formulario enviado correctamente. ¡Gracias por tu interés!"})

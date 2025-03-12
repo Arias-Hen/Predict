@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+import psycopg2
+from django.conf import settings
 
 class Task(models.Model):
     title = models.CharField(max_length=100)
@@ -78,5 +80,104 @@ class Valoracion(models.Model):
     ascensor = models.BooleanField()
     estado_inmueble = models.CharField(max_length=50)
     fecha_guardado = models.DateTimeField(auto_now_add=True)
+    precio_minimo = models.FloatField()
+    precio_esperado = models.FloatField()
+    precio_maximo = models.FloatField()
+    precio_esperado_unico= models.FloatField()
     class Meta:
         db_table = 'data"."ventas'
+
+# models.py
+class PredictionModel:
+    @staticmethod
+    def get_radar_data(ciudad, distrito, barrio, tipo_vivienda, user_data):
+        conn = None
+        try:
+            conn = psycopg2.connect(
+                host=settings.DATABASES['default']['HOST'],
+                port=settings.DATABASES['default']['PORT'],
+                database=settings.DATABASES['default']['NAME'],
+                user=settings.DATABASES['default']['USER'],
+                password=settings.DATABASES['default']['PASSWORD']
+            )
+            
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 
+                        promedio_m2, promedio_habitaciones, promedio_banos, 
+                        promedio_precio, proporcion_terraza, proporcion_balcon, 
+                        proporcion_ascensor
+                    FROM data.inv_agrupacion_viviendas_madrid
+                    WHERE ciudad = %s AND distrito = %s AND barrio = %s AND tipo_vivienda = %s
+                """, (ciudad, distrito, barrio, tipo_vivienda))
+                
+                result = cursor.fetchone()
+                
+                # Función de escalado idéntica a Streamlit
+                def min_max_scaler(arr, max_value, min_val=0, max_val=100):
+                    safe_max = max_value if max_value != 0 else 1e-10
+                    return min_val + (arr / safe_max) * (max_val - min_val)
+
+                # Procesar datos medios
+                valores_medios = {
+                    "m2": float(result[0]) if result else 0.0,
+                    "habitaciones": float(result[1]) if result else 0.0,
+                    "banos": float(result[2]) if result else 0.0,
+                    "precio": float(result[3]) if result else 0.0,
+                    "terraza": float(result[4]) if result else 0.0,
+                    "balcon": float(result[5]) if result else 0.0,
+                    "ascensor": float(result[6]) if result else 0.0
+                }
+
+                # Procesar datos del usuario
+                user_data_float = {
+                    "m2": float(user_data.get("m2", 0)),
+                    "habitaciones": float(user_data.get("num_habitaciones", 0)),
+                    "banos": float(user_data.get("num_banos", 0)),
+                    "precio": float(user_data.get("precio_medio", 0)),
+                    "terraza": float(user_data.get("terraza", 0)),
+                    "balcon": float(user_data.get("balcon", 0)),
+                    "ascensor": float(user_data.get("ascensor", 0))
+                }
+
+                # Calcular máximos para escalado
+                max_values = {
+                    'm2': max(valores_medios['m2'], user_data_float['m2']),
+                    'habitaciones': max(valores_medios['habitaciones'], user_data_float['habitaciones']),
+                    'banos': max(valores_medios['banos'], user_data_float['banos']),
+                    'precio': max(valores_medios['precio'], user_data_float['precio'])
+                }
+
+                # Aplicar escalado
+                scaled_medio = {
+                    'm2': min_max_scaler(valores_medios['m2'], max_values['m2']),
+                    'habitaciones': min_max_scaler(valores_medios['habitaciones'], max_values['habitaciones']),
+                    'banos': min_max_scaler(valores_medios['banos'], max_values['banos']),
+                    'precio': min_max_scaler(valores_medios['precio'], max_values['precio'])
+                }
+
+                scaled_usuario = {
+                    'm2': min_max_scaler(user_data_float['m2'], max_values['m2']),
+                    'habitaciones': min_max_scaler(user_data_float['habitaciones'], max_values['habitaciones']),
+                    'banos': min_max_scaler(user_data_float['banos'], max_values['banos']),
+                    'precio': min_max_scaler(user_data_float['precio'], max_values['precio'])
+                }
+
+                return {
+                    "valores_medios": scaled_medio,
+                    "valores_usuario": scaled_usuario,
+                    "texto_adicional": {
+                        "porcentajes_barrio": {
+                            "terraza": f"{valores_medios['terraza'] * 100:.0f}%",
+                            "balcon": f"{valores_medios['balcon'] * 100:.0f}%",
+                            "ascensor": f"{valores_medios['ascensor'] * 100:.0f}%"
+                        }
+                    }
+                }
+                
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return {"error": str(e)}
+        finally:
+            if conn:
+                conn.close()
